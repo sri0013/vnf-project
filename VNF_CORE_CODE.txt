@@ -1,0 +1,815 @@
+VNF SERVICE FUNCTION CHAIN - CORE IMPLEMENTATION CODE
+=====================================================
+
+================================================================================
+FIREWALL VNF IMPLEMENTATION
+================================================================================
+
+# firewall/firewall.py
+#!/usr/bin/env python3
+"""
+Firewall VNF - Network-level security filtering
+Blocks specific IP addresses and ports, logs traffic
+"""
+
+import time
+import logging
+import threading
+from datetime import datetime
+import random
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+class FirewallVNF:
+    def __init__(self):
+        self.blocked_ips = {'192.168.1.100', '10.0.0.50', '172.16.0.25'}
+        self.allowed_ports = {25, 587, 465, 993, 995}
+        self.stats = {
+            'packets_processed': 0,
+            'packets_blocked': 0,
+            'packets_allowed': 0,
+            'start_time': datetime.now()
+        }
+        logger.info("Firewall VNF initialized")
+    
+    def inspect_packet(self, source_ip: str, dest_port: int) -> bool:
+        if source_ip in self.blocked_ips:
+            logger.warning(f"Blocked packet from blocked IP: {source_ip}")
+            return False
+        if dest_port not in self.allowed_ports:
+            logger.warning(f"Blocked packet to unauthorized port: {dest_port}")
+            return False
+        return True
+    
+    def process_traffic(self):
+        while True:
+            try:
+                source_ips = ['192.168.1.10', '192.168.1.20', '192.168.1.100', '10.0.0.1', '10.0.0.50']
+                dest_ports = [25, 587, 465, 993, 995, 80, 443, 22]
+                
+                for _ in range(random.randint(1, 5)):
+                    source_ip = random.choice(source_ips)
+                    dest_port = random.choice(dest_ports)
+                    self.stats['packets_processed'] += 1
+                    
+                    if self.inspect_packet(source_ip, dest_port):
+                        self.stats['packets_allowed'] += 1
+                        logger.info(f"Allowed packet: {source_ip}:{dest_port}")
+                    else:
+                        self.stats['packets_blocked'] += 1
+                
+                time.sleep(random.uniform(1, 3))
+            except KeyboardInterrupt:
+                break
+            except Exception as e:
+                logger.error(f"Error processing traffic: {e}")
+                time.sleep(1)
+    
+    def get_stats(self) -> dict:
+        uptime = datetime.now() - self.stats['start_time']
+        return {
+            **self.stats,
+            'uptime_seconds': uptime.total_seconds(),
+            'blocked_ips': list(self.blocked_ips),
+            'allowed_ports': list(self.allowed_ports)
+        }
+
+def main():
+    logger.info("Starting Firewall VNF...")
+    firewall = FirewallVNF()
+    
+    traffic_thread = threading.Thread(target=firewall.process_traffic, daemon=True)
+    traffic_thread.start()
+    
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        logger.info("Shutting down Firewall VNF...")
+
+if __name__ == "__main__":
+    main()
+
+================================================================================
+ANTIVIRUS VNF IMPLEMENTATION
+================================================================================
+
+# antivirus/antivirus.py
+#!/usr/bin/env python3
+"""
+Antivirus VNF - Malware detection and scanning
+Scans content for virus signatures and suspicious patterns
+"""
+
+import time
+import logging
+import threading
+import hashlib
+import re
+from datetime import datetime
+import random
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+class AntivirusVNF:
+    def __init__(self):
+        # Mock virus signatures (MD5 hashes)
+        self.virus_signatures = {
+            'd41d8cd98f00b204e9800998ecf8427e',  # Empty file
+            '5d41402abc4b2a76b9719d911017c592',  # Mock virus 1
+            '098f6bcd4621d373cade4e832627b4f6',  # Mock virus 2
+        }
+        
+        # Suspicious patterns
+        self.suspicious_patterns = [
+            r'<script.*?>.*?</script>',  # JavaScript
+            r'javascript:',  # JavaScript protocol
+            r'vbscript:',  # VBScript
+            r'<iframe.*?>',  # IFrame
+            r'eval\s*\(',  # Eval function
+            r'document\.write',  # Document write
+        ]
+        
+        self.stats = {
+            'files_scanned': 0,
+            'threats_detected': 0,
+            'clean_files': 0,
+            'start_time': datetime.now()
+        }
+        logger.info("Antivirus VNF initialized")
+    
+    def scan_content(self, content: str, filename: str = None) -> dict:
+        self.stats['files_scanned'] += 1
+        
+        # Check for virus signatures
+        content_hash = hashlib.md5(content.encode()).hexdigest()
+        if content_hash in self.virus_signatures:
+            self.stats['threats_detected'] += 1
+            logger.warning(f"Virus detected in {filename}: {content_hash}")
+            return {'threat': True, 'type': 'virus', 'signature': content_hash}
+        
+        # Check for suspicious patterns
+        for pattern in self.suspicious_patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                self.stats['threats_detected'] += 1
+                logger.warning(f"Suspicious pattern detected in {filename}: {pattern}")
+                return {'threat': True, 'type': 'suspicious_pattern', 'pattern': pattern}
+        
+        self.stats['clean_files'] += 1
+        logger.info(f"File {filename} is clean")
+        return {'threat': False, 'type': 'clean'}
+    
+    def process_content(self):
+        while True:
+            try:
+                # Simulate email content scanning
+                sample_contents = [
+                    "Hello, this is a legitimate email.",
+                    "<script>alert('malicious')</script>",
+                    "Please find attached document.",
+                    "javascript:alert('xss')",
+                    "Normal business communication."
+                ]
+                
+                filenames = ["email1.txt", "email2.html", "email3.txt", "email4.html", "email5.txt"]
+                
+                for _ in range(random.randint(1, 3)):
+                    content = random.choice(sample_contents)
+                    filename = random.choice(filenames)
+                    result = self.scan_content(content, filename)
+                
+                time.sleep(random.uniform(2, 4))
+            except KeyboardInterrupt:
+                break
+            except Exception as e:
+                logger.error(f"Error processing content: {e}")
+                time.sleep(1)
+    
+    def get_stats(self) -> dict:
+        uptime = datetime.now() - self.stats['start_time']
+        return {
+            **self.stats,
+            'uptime_seconds': uptime.total_seconds(),
+            'virus_signatures_count': len(self.virus_signatures),
+            'suspicious_patterns_count': len(self.suspicious_patterns)
+        }
+
+def main():
+    logger.info("Starting Antivirus VNF...")
+    antivirus = AntivirusVNF()
+    
+    content_thread = threading.Thread(target=antivirus.process_content, daemon=True)
+    content_thread.start()
+    
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        logger.info("Shutting down Antivirus VNF...")
+
+if __name__ == "__main__":
+    main()
+
+================================================================================
+SPAM FILTER VNF IMPLEMENTATION
+================================================================================
+
+# spamfilter/spamfilter.py
+#!/usr/bin/env python3
+"""
+Spam Filter VNF - Spam detection and filtering
+Uses keyword scoring and pattern detection
+"""
+
+import time
+import logging
+import threading
+import re
+from datetime import datetime
+import random
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+class SpamFilterVNF:
+    def __init__(self):
+        # Spam keywords with weights
+        self.spam_keywords = {
+            'FREE': 5, 'URGENT': 3, 'WIN': 4, 'PRIZE': 4, 'MONEY': 3,
+            'CASH': 4, 'GUARANTEE': 3, 'ACT NOW': 5, 'LIMITED TIME': 4,
+            'EXCLUSIVE': 3, 'SECRET': 3, 'AMAZING': 2, 'INCREDIBLE': 2,
+            'CLICK HERE': 4, 'BUY NOW': 3, 'DISCOUNT': 2, 'SALE': 2
+        }
+        
+        # Spam domains
+        self.spam_domains = {
+            'spam.com', 'malicious.net', 'fake.org', 'scam.info'
+        }
+        
+        # Suspicious patterns
+        self.suspicious_patterns = [
+            r'\b[A-Z]{10,}\b',  # ALL CAPS words
+            r'\$\d+',  # Dollar amounts
+            r'\b\d{10,}\b',  # Long numbers
+            r'[!]{2,}',  # Multiple exclamation marks
+        ]
+        
+        self.stats = {
+            'emails_processed': 0,
+            'spam_detected': 0,
+            'legitimate_emails': 0,
+            'start_time': datetime.now()
+        }
+        logger.info("Spam Filter VNF initialized")
+    
+    def calculate_spam_score(self, subject: str, sender: str, content: str) -> float:
+        score = 0.0
+        
+        # Check subject
+        subject_upper = subject.upper()
+        for keyword, weight in self.spam_keywords.items():
+            if keyword in subject_upper:
+                score += weight
+        
+        # Check sender domain
+        sender_domain = sender.split('@')[-1] if '@' in sender else sender
+        if sender_domain in self.spam_domains:
+            score += 10
+        
+        # Check content
+        content_upper = content.upper()
+        for keyword, weight in self.spam_keywords.items():
+            if keyword in content_upper:
+                score += weight * 0.5  # Lower weight for content
+        
+        # Check suspicious patterns
+        for pattern in self.suspicious_patterns:
+            if re.search(pattern, subject + ' ' + content):
+                score += 2
+        
+        return score
+    
+    def filter_email(self, subject: str, sender: str, content: str) -> dict:
+        self.stats['emails_processed'] += 1
+        
+        spam_score = self.calculate_spam_score(subject, sender, content)
+        is_spam = spam_score >= 8.0  # Threshold for spam detection
+        
+        if is_spam:
+            self.stats['spam_detected'] += 1
+            logger.warning(f"Spam detected: {subject} (score: {spam_score:.2f})")
+            return {'spam': True, 'score': spam_score, 'action': 'block'}
+        else:
+            self.stats['legitimate_emails'] += 1
+            logger.info(f"Legitimate email: {subject} (score: {spam_score:.2f})")
+            return {'spam': False, 'score': spam_score, 'action': 'allow'}
+    
+    def process_emails(self):
+        while True:
+            try:
+                # Simulate email processing
+                sample_emails = [
+                    {
+                        'subject': 'Meeting Tomorrow',
+                        'sender': 'colleague@company.com',
+                        'content': 'Hi, let\'s meet tomorrow at 2 PM to discuss the project.'
+                    },
+                    {
+                        'subject': 'FREE MONEY - ACT NOW!!!',
+                        'sender': 'winner@spam.com',
+                        'content': 'You have won $1,000,000! Click here to claim your prize NOW!'
+                    },
+                    {
+                        'subject': 'Project Update',
+                        'sender': 'manager@company.com',
+                        'content': 'Here is the latest update on our ongoing project.'
+                    }
+                ]
+                
+                for _ in range(random.randint(1, 3)):
+                    email = random.choice(sample_emails)
+                    result = self.filter_email(email['subject'], email['sender'], email['content'])
+                
+                time.sleep(random.uniform(2, 4))
+            except KeyboardInterrupt:
+                break
+            except Exception as e:
+                logger.error(f"Error processing emails: {e}")
+                time.sleep(1)
+    
+    def get_stats(self) -> dict:
+        uptime = datetime.now() - self.stats['start_time']
+        return {
+            **self.stats,
+            'uptime_seconds': uptime.total_seconds(),
+            'spam_keywords_count': len(self.spam_keywords),
+            'spam_domains_count': len(self.spam_domains)
+        }
+
+def main():
+    logger.info("Starting Spam Filter VNF...")
+    spam_filter = SpamFilterVNF()
+    
+    email_thread = threading.Thread(target=spam_filter.process_emails, daemon=True)
+    email_thread.start()
+    
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        logger.info("Shutting down Spam Filter VNF...")
+
+if __name__ == "__main__":
+    main()
+
+================================================================================
+ENCRYPTION GATEWAY VNF IMPLEMENTATION
+================================================================================
+
+# encryption_gateway/encryption_gateway.py
+#!/usr/bin/env python3
+"""
+Encryption Gateway VNF - Email encryption and decryption
+Simple XOR + Base64 encryption for demonstration
+"""
+
+import time
+import logging
+import threading
+import base64
+import random
+from datetime import datetime
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+class EncryptionGatewayVNF:
+    def __init__(self):
+        self.encryption_key = "VNF_SECRET_KEY_2024"
+        self.key_rotation_counter = 0
+        self.stats = {
+            'content_encrypted': 0,
+            'content_decrypted': 0,
+            'keys_rotated': 0,
+            'start_time': datetime.now()
+        }
+        logger.info("Encryption Gateway VNF initialized")
+    
+    def simple_encrypt(self, content: str) -> str:
+        # Simple XOR encryption with Base64 encoding
+        key_bytes = self.encryption_key.encode()
+        content_bytes = content.encode()
+        
+        encrypted_bytes = bytearray()
+        for i, byte in enumerate(content_bytes):
+            key_byte = key_bytes[i % len(key_bytes)]
+            encrypted_bytes.append(byte ^ key_byte)
+        
+        return base64.b64encode(encrypted_bytes).decode()
+    
+    def simple_decrypt(self, encrypted_content: str) -> str:
+        # Simple XOR decryption with Base64 decoding
+        key_bytes = self.encryption_key.encode()
+        encrypted_bytes = base64.b64decode(encrypted_content.encode())
+        
+        decrypted_bytes = bytearray()
+        for i, byte in enumerate(encrypted_bytes):
+            key_byte = key_bytes[i % len(key_bytes)]
+            decrypted_bytes.append(byte ^ key_byte)
+        
+        return decrypted_bytes.decode()
+    
+    def process_content(self, content: str, action: str = 'encrypt') -> dict:
+        if action == 'encrypt':
+            encrypted = self.simple_encrypt(content)
+            self.stats['content_encrypted'] += 1
+            logger.info(f"Content encrypted successfully")
+            return {'action': 'encrypt', 'result': encrypted, 'success': True}
+        elif action == 'decrypt':
+            decrypted = self.simple_decrypt(content)
+            self.stats['content_decrypted'] += 1
+            logger.info(f"Content decrypted successfully")
+            return {'action': 'decrypt', 'result': decrypted, 'success': True}
+        else:
+            logger.error(f"Unknown action: {action}")
+            return {'action': action, 'success': False, 'error': 'Unknown action'}
+    
+    def rotate_key(self):
+        # Simple key rotation
+        self.key_rotation_counter += 1
+        new_key = f"VNF_SECRET_KEY_{2024 + self.key_rotation_counter}"
+        self.encryption_key = new_key
+        self.stats['keys_rotated'] += 1
+        logger.info(f"Encryption key rotated: {new_key}")
+    
+    def process_encryption_requests(self):
+        while True:
+            try:
+                # Simulate encryption/decryption requests
+                sample_contents = [
+                    "Hello, this is a confidential message.",
+                    "Please review the attached documents.",
+                    "Meeting scheduled for tomorrow at 3 PM.",
+                    "Project status update: On track and within budget."
+                ]
+                
+                actions = ['encrypt', 'decrypt']
+                
+                for _ in range(random.randint(1, 3)):
+                    content = random.choice(sample_contents)
+                    action = random.choice(actions)
+                    
+                    if action == 'decrypt':
+                        # For decryption, first encrypt the content
+                        encrypted_content = self.simple_encrypt(content)
+                        result = self.process_content(encrypted_content, 'decrypt')
+                    else:
+                        result = self.process_content(content, action)
+                
+                # Randomly rotate key
+                if random.random() < 0.1:  # 10% chance
+                    self.rotate_key()
+                
+                time.sleep(random.uniform(2, 4))
+            except KeyboardInterrupt:
+                break
+            except Exception as e:
+                logger.error(f"Error processing encryption requests: {e}")
+                time.sleep(1)
+    
+    def get_stats(self) -> dict:
+        uptime = datetime.now() - self.stats['start_time']
+        return {
+            **self.stats,
+            'uptime_seconds': uptime.total_seconds(),
+            'current_key': self.encryption_key,
+            'key_rotation_counter': self.key_rotation_counter
+        }
+
+def main():
+    logger.info("Starting Encryption Gateway VNF...")
+    encryption_gateway = EncryptionGatewayVNF()
+    
+    encryption_thread = threading.Thread(target=encryption_gateway.process_encryption_requests, daemon=True)
+    encryption_thread.start()
+    
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        logger.info("Shutting down Encryption Gateway VNF...")
+
+if __name__ == "__main__":
+    main()
+
+================================================================================
+CONTENT FILTERING VNF IMPLEMENTATION
+================================================================================
+
+# content_filtering/content_filtering.py
+#!/usr/bin/env python3
+"""
+Content Filtering VNF - Content policy enforcement
+Detects prohibited patterns and enforces content policies
+"""
+
+import time
+import logging
+import threading
+import re
+from datetime import datetime
+import random
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+class ContentFilteringVNF:
+    def __init__(self):
+        # Prohibited patterns (regex)
+        self.prohibited_patterns = {
+            'credit_card': r'\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b',
+            'ssn': r'\b\d{3}-\d{2}-\d{4}\b',
+            'phone': r'\b\d{3}-\d{3}-\d{4}\b',
+            'email': r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        }
+        
+        # Blocked keywords
+        self.blocked_keywords = {
+            'confidential', 'secret', 'classified', 'internal',
+            'password', 'login', 'credentials', 'private'
+        }
+        
+        # File type restrictions
+        self.allowed_file_types = {'.txt', '.pdf', '.doc', '.docx', '.jpg', '.png'}
+        self.max_file_size = 10 * 1024 * 1024  # 10MB
+        
+        self.stats = {
+            'content_scanned': 0,
+            'violations_detected': 0,
+            'policy_checks': 0,
+            'start_time': datetime.now()
+        }
+        logger.info("Content Filtering VNF initialized")
+    
+    def scan_content(self, content: str, filename: str = None) -> dict:
+        self.stats['content_scanned'] += 1
+        violations = []
+        
+        # Check for prohibited patterns
+        for pattern_name, pattern in self.prohibited_patterns.items():
+            matches = re.findall(pattern, content)
+            if matches:
+                violations.append({
+                    'type': 'prohibited_pattern',
+                    'pattern': pattern_name,
+                    'matches': matches
+                })
+        
+        # Check for blocked keywords
+        content_lower = content.lower()
+        for keyword in self.blocked_keywords:
+            if keyword in content_lower:
+                violations.append({
+                    'type': 'blocked_keyword',
+                    'keyword': keyword
+                })
+        
+        # Check file type (if filename provided)
+        if filename:
+            file_ext = '.' + filename.split('.')[-1].lower()
+            if file_ext not in self.allowed_file_types:
+                violations.append({
+                    'type': 'unauthorized_file_type',
+                    'file_type': file_ext
+                })
+        
+        if violations:
+            self.stats['violations_detected'] += 1
+            logger.warning(f"Content policy violations detected: {violations}")
+            return {'violations': violations, 'action': 'block', 'success': False}
+        else:
+            logger.info(f"Content passed policy checks: {filename}")
+            return {'violations': [], 'action': 'allow', 'success': True}
+    
+    def check_policy(self, content: str, metadata: dict = None) -> dict:
+        self.stats['policy_checks'] += 1
+        
+        filename = metadata.get('filename') if metadata else None
+        file_size = metadata.get('file_size', 0) if metadata else 0
+        
+        # Check file size
+        if file_size > self.max_file_size:
+            logger.warning(f"File size exceeds limit: {file_size} bytes")
+            return {
+                'violations': [{'type': 'file_size_exceeded', 'size': file_size}],
+                'action': 'block',
+                'success': False
+            }
+        
+        # Scan content
+        scan_result = self.scan_content(content, filename)
+        return scan_result
+    
+    def process_content_requests(self):
+        while True:
+            try:
+                # Simulate content processing
+                sample_contents = [
+                    "Hello, this is a normal business email.",
+                    "My credit card number is 1234-5678-9012-3456.",
+                    "SSN: 123-45-6789",
+                    "Confidential information: password is secret123",
+                    "Please find attached document.pdf"
+                ]
+                
+                sample_filenames = ["email1.txt", "document.pdf", "report.doc", "script.exe", "image.jpg"]
+                
+                for _ in range(random.randint(1, 3)):
+                    content = random.choice(sample_contents)
+                    filename = random.choice(sample_filenames)
+                    file_size = random.randint(1000, 15 * 1024 * 1024)  # 1KB to 15MB
+                    
+                    metadata = {
+                        'filename': filename,
+                        'file_size': file_size
+                    }
+                    
+                    result = self.check_policy(content, metadata)
+                
+                time.sleep(random.uniform(2, 4))
+            except KeyboardInterrupt:
+                break
+            except Exception as e:
+                logger.error(f"Error processing content requests: {e}")
+                time.sleep(1)
+    
+    def get_stats(self) -> dict:
+        uptime = datetime.now() - self.stats['start_time']
+        return {
+            **self.stats,
+            'uptime_seconds': uptime.total_seconds(),
+            'prohibited_patterns_count': len(self.prohibited_patterns),
+            'blocked_keywords_count': len(self.blocked_keywords),
+            'allowed_file_types': list(self.allowed_file_types),
+            'max_file_size_mb': self.max_file_size / (1024 * 1024)
+        }
+
+def main():
+    logger.info("Starting Content Filtering VNF...")
+    content_filter = ContentFilteringVNF()
+    
+    content_thread = threading.Thread(target=content_filter.process_content_requests, daemon=True)
+    content_thread.start()
+    
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        logger.info("Shutting down Content Filtering VNF...")
+
+if __name__ == "__main__":
+    main()
+
+================================================================================
+DOCKERFILE TEMPLATE (for all VNFs)
+================================================================================
+
+# <vnf_name>/Dockerfile
+FROM python:3.8-slim
+WORKDIR /app
+COPY <vnf_name>.py /app/
+CMD ["python", "-u", "<vnf_name>.py"]
+
+================================================================================
+SIMPLE TOPOLOGY SCRIPT
+================================================================================
+
+# scripts/sfc_topology_simple.py
+#!/usr/bin/env python3
+"""
+Simplified SFC Topology Script - Docker-based Service Function Chain
+Creates VNF containers without requiring Mininet
+"""
+
+import subprocess
+import time
+import sys
+from datetime import datetime
+
+def log(message):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[SFC {timestamp}] {message}")
+
+def check_docker_images():
+    required_images = [
+        'vnf-firewall:latest',
+        'vnf-antivirus:latest', 
+        'vnf-spamfilter:latest',
+        'vnf-encryption:latest',
+        'vnf-contentfilter:latest'
+    ]
+    
+    missing_images = []
+    for image in required_images:
+        result = subprocess.run(['docker', 'images', '-q', image], capture_output=True, text=True)
+        if not result.stdout.strip():
+            missing_images.append(image)
+    
+    if missing_images:
+        log(f"❌ Missing Docker images: {missing_images}")
+        log("Please build the VNF images first:")
+        for image in missing_images:
+            vnf_name = image.split(':')[0].replace('vnf-', '')
+            log(f"  cd {vnf_name} && docker build -t {image} .")
+        return False
+    
+    log("✅ All required Docker images found")
+    return True
+
+def cleanup_containers():
+    log("Cleaning up existing VNF containers...")
+    containers = ['vnf-firewall', 'vnf-antivirus', 'vnf-spamfilter', 'vnf-encryption', 'vnf-contentfilter']
+    
+    for container in containers:
+        subprocess.run(['docker', 'stop', container], capture_output=True)
+        subprocess.run(['docker', 'rm', container], capture_output=True)
+    
+    log("✅ Container cleanup completed")
+
+def create_sfc_network():
+    log("Creating SFC network...")
+    
+    # Create Docker network
+    subprocess.run(['docker', 'network', 'create', 'vnf-network'], capture_output=True)
+    
+    # Start VNF containers
+    vnf_configs = [
+        ('vnf-firewall', 'vnf-firewall:latest', '8081'),
+        ('vnf-antivirus', 'vnf-antivirus:latest', '8082'),
+        ('vnf-spamfilter', 'vnf-spamfilter:latest', '8083'),
+        ('vnf-encryption', 'vnf-encryption:latest', '8084'),
+        ('vnf-contentfilter', 'vnf-contentfilter:latest', '8085')
+    ]
+    
+    for container_name, image, port in vnf_configs:
+        log(f"Starting {container_name}...")
+        subprocess.run([
+            'docker', 'run', '-d',
+            '--name', container_name,
+            '--network', 'vnf-network',
+            '-p', f'{port}:8080',
+            image
+        ])
+        time.sleep(2)
+    
+    log("✅ SFC network created successfully")
+    log("VNF Monitoring Commands:")
+    log("  docker logs vnf-firewall")
+    log("  docker logs vnf-antivirus")
+    log("  docker logs vnf-spamfilter")
+    log("  docker logs vnf-encryption")
+    log("  docker logs vnf-contentfilter")
+    
+    # Keep running
+    try:
+        while True:
+            log("SFC network running... (Ctrl+C to stop)")
+            time.sleep(10)
+    except KeyboardInterrupt:
+        log("Stopping SFC network...")
+        cleanup_containers()
+
+def main():
+    log("🚀 Starting VNF Service Function Chain")
+    
+    if not check_docker_images():
+        sys.exit(1)
+    
+    cleanup_containers()
+    create_sfc_network()
+
+if __name__ == "__main__":
+    main()
+
+================================================================================
+END OF CORE VNF IMPLEMENTATIONS
+================================================================================
+
+This file contains the core implementation code for all 5 VNFs in the Service Function Chain:
+
+1. Firewall VNF - Network-level security filtering
+2. Antivirus VNF - Malware detection and scanning  
+3. Spam Filter VNF - Spam detection and filtering
+4. Encryption Gateway VNF - Email encryption/decryption
+5. Content Filtering VNF - Content policy enforcement
+
+Each VNF includes:
+- Complete Python implementation
+- Docker containerization
+- Logging and statistics tracking
+- Error handling and graceful degradation
+- Threading for concurrent operations
+
+The simple topology script provides easy deployment without Mininet requirements.

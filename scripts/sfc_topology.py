@@ -205,7 +205,7 @@ def main():
     try:
         create_sfc_network()
     except Exception as e:
-        info(f"❌ Error creating network: {e}\n")
+        info(f"❌ Error creating network: {str(e)}\n")
         sys.exit(1)
 
 if __name__ == '__main__':
