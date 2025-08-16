@@ -1,0 +1,159 @@
+version: '3.8'
+
+services:
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus_config.yml:/etc/prometheus/prometheus.yml
+      - ./vnf_rules.yml:/etc/prometheus/vnf_rules.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - vnf-network
+    restart: unless-stopped
+
+  # SDN Controller for flow management
+  sdn-controller:
+    build:
+      context: .
+      dockerfile: Dockerfile.sdn
+    container_name: sdn-controller
+    ports:
+      - "8080:8080"
+    environment:
+      - FLASK_ENV=production
+    networks:
+      - vnf-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+  # VNF Orchestrator
+  vnf-orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.orchestrator
+    container_name: vnf-orchestrator
+    ports:
+      - "9091:9090"  # Prometheus metrics port
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./orchestration_config.yml:/app/orchestration_config.yml
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    networks:
+      - vnf-network
+    restart: unless-stopped
+    depends_on:
+      - sdn-controller
+      - prometheus
+
+  # Grafana for visualization (optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana_dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana_datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - vnf-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+  # VNF Instances (initial deployment)
+  vnf-firewall-1:
+    image: vnf-firewall:latest
+    container_name: vnf-firewall-1
+    ports:
+      - "8081:8080"
+    environment:
+      - VNF_TYPE=firewall
+      - INSTANCE_ID=firewall-1
+    networks:
+      - vnf-network
+    restart: unless-stopped
+    depends_on:
+      - sdn-controller
+
+  vnf-antivirus-1:
+    image: vnf-antivirus:latest
+    container_name: vnf-antivirus-1
+    ports:
+      - "8082:8080"
+    environment:
+      - VNF_TYPE=antivirus
+      - INSTANCE_ID=antivirus-1
+    networks:
+      - vnf-network
+    restart: unless-stopped
+    depends_on:
+      - sdn-controller
+
+  vnf-spamfilter-1:
+    image: vnf-spamfilter:latest
+    container_name: vnf-spamfilter-1
+    ports:
+      - "8083:8080"
+    environment:
+      - VNF_TYPE=spamfilter
+      - INSTANCE_ID=spamfilter-1
+    networks:
+      - vnf-network
+    restart: unless-stopped
+    depends_on:
+      - sdn-controller
+
+  vnf-encryption-1:
+    image: vnf-encryption:latest
+    container_name: vnf-encryption-1
+    ports:
+      - "8084:8080"
+    environment:
+      - VNF_TYPE=encryption
+      - INSTANCE_ID=encryption-1
+    networks:
+      - vnf-network
+    restart: unless-stopped
+    depends_on:
+      - sdn-controller
+
+  vnf-contentfilter-1:
+    image: vnf-contentfilter:latest
+    container_name: vnf-contentfilter-1
+    ports:
+      - "8085:8080"
+    environment:
+      - VNF_TYPE=contentfilter
+      - INSTANCE_ID=contentfilter-1
+    networks:
+      - vnf-network
+    restart: unless-stopped
+    depends_on:
+      - sdn-controller
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  vnf-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

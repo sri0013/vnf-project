@@ -1,0 +1,516 @@
+VNF SERVICE FUNCTION CHAIN PROJECT - COMPLETE CODE
+==================================================
+
+PROJECT STRUCTURE:
+vnf-project/
+├── README.md
+├── PROJECT_SUMMARY.txt
+├── firewall/
+│   ├── Dockerfile
+│   └── firewall.py
+├── antivirus/
+│   ├── Dockerfile
+│   └── antivirus.py
+├── spamfilter/
+│   ├── Dockerfile
+│   └── spamfilter.py
+├── encryption_gateway/
+│   ├── Dockerfile
+│   └── encryption_gateway.py
+├── content_filtering/
+│   ├── Dockerfile
+│   └── content_filtering.py
+├── scripts/
+│   ├── sfc_topology.py
+│   ├── sfc_topology_simple.py
+│   └── vnf_test.py
+└── orchestration/
+    ├── README.md
+    ├── requirements.txt
+    ├── orchestration_config.yml
+    ├── prometheus_config.yml
+    ├── vnf_rules.yml
+    ├── docker-compose.yml
+    ├── Dockerfile.orchestrator
+    ├── Dockerfile.sdn
+    ├── vnf_orchestrator.py
+    ├── sdn_controller.py
+    └── start_orchestration.py
+
+================================================================================
+FILE: README.md
+================================================================================
+
+# VNF Service Function Chain (SFC) Project
+
+## Overview
+This project implements a complete Virtual Network Function (VNF) Service Function Chain for email security using Docker containers and Python. The SFC processes email traffic through a sequence of security functions: Firewall → Antivirus → Spam Filter → Encryption Gateway → Content Filtering.
+
+## Architecture
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│   Firewall  │───▶│  Antivirus  │───▶│ Spam Filter │───▶│ Encryption  │───▶│   Content   │
+│     VNF     │    │     VNF     │    │     VNF     │    │   Gateway   │    │  Filtering  │
+│             │    │             │    │             │    │     VNF     │    │     VNF     │
+└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
+```
+
+## VNF Functions
+
+### 1. Firewall VNF
+- **Purpose**: Network-level security filtering
+- **Functions**: 
+  - IP address blocking (192.168.1.100, 10.0.0.50)
+  - Port filtering (allows only 25, 587, 465, 993, 995)
+  - Packet inspection and logging
+  - Traffic statistics tracking
+
+### 2. Antivirus VNF
+- **Purpose**: Malware detection and scanning
+- **Functions**:
+  - Virus signature database (MD5 hashes)
+  - Suspicious pattern detection (regex patterns)
+  - Content scanning for malicious code
+  - File attachment analysis
+
+### 3. Spam Filter VNF
+- **Purpose**: Spam detection and filtering
+- **Functions**:
+  - Spam keyword detection with weighted scoring
+  - Suspicious domain blocking
+  - Pattern-based spam detection
+  - Spam score calculation and classification
+
+### 4. Encryption Gateway VNF
+- **Purpose**: Email encryption and decryption
+- **Functions**:
+  - Simple encryption algorithm (XOR + Base64)
+  - Key rotation mechanism
+  - Encrypted content processing
+  - Security logging
+
+### 5. Content Filtering VNF
+- **Purpose**: Content policy enforcement
+- **Functions**:
+  - Prohibited pattern detection (credit cards, SSNs)
+  - Blocked keyword filtering
+  - File type restrictions
+  - File size limitations
+
+## Deployment Instructions
+
+### Prerequisites
+- Docker installed and running
+- Python 3.8+ (for local development)
+- Git
+
+### Quick Start (Windows)
+```bash
+# Clone the repository
+git clone <repository-url>
+cd vnf-project
+
+# Build Docker images
+cd firewall && docker build -t vnf-firewall:latest .
+cd ../antivirus && docker build -t vnf-antivirus:latest .
+cd ../spamfilter && docker build -t vnf-spamfilter:latest .
+cd ../encryption_gateway && docker build -t vnf-encryption:latest .
+cd ../content_filtering && docker build -t vnf-contentfilter:latest .
+
+# Run the SFC network
+python scripts/sfc_topology_simple.py
+```
+
+### Quick Start (Linux)
+```bash
+# Clone the repository
+git clone <repository-url>
+cd vnf-project
+
+# Build Docker images
+cd firewall && docker build -t vnf-firewall:latest .
+cd ../antivirus && docker build -t vnf-antivirus:latest .
+cd ../spamfilter && docker build -t vnf-spamfilter:latest .
+cd ../encryption_gateway && docker build -t vnf-encryption:latest .
+cd ../content_filtering && docker build -t vnf-contentfilter:latest .
+
+# Run with Mininet (optional)
+sudo python3 scripts/sfc_topology.py
+
+# Or run without Mininet
+python3 scripts/sfc_topology_simple.py
+```
+
+### Push to Docker Hub
+```bash
+# Tag images with your username
+docker tag vnf-firewall:latest <username>/vnf-firewall:latest
+docker tag vnf-antivirus:latest <username>/vnf-antivirus:latest
+docker tag vnf-spamfilter:latest <username>/vnf-spamfilter:latest
+docker tag vnf-encryption:latest <username>/vnf-encryption:latest
+docker tag vnf-contentfilter:latest <username>/vnf-contentfilter:latest
+
+# Push to Docker Hub
+docker push <username>/vnf-firewall:latest
+docker push <username>/vnf-antivirus:latest
+docker push <username>/vnf-spamfilter:latest
+docker push <username>/vnf-encryption:latest
+docker push <username>/vnf-contentfilter:latest
+```
+
+### Deploy on Linux VM
+```bash
+# Pull images from Docker Hub
+docker pull <username>/vnf-firewall:latest
+docker pull <username>/vnf-antivirus:latest
+docker pull <username>/vnf-spamfilter:latest
+docker pull <username>/vnf-encryption:latest
+docker pull <username>/vnf-contentfilter:latest
+
+# Run containers
+docker run -d --name vnf-firewall <username>/vnf-firewall:latest
+docker run -d --name vnf-antivirus <username>/vnf-antivirus:latest
+docker run -d --name vnf-spamfilter <username>/vnf-spamfilter:latest
+docker run -d --name vnf-encryption <username>/vnf-encryption:latest
+docker run -d --name vnf-contentfilter <username>/vnf-contentfilter:latest
+```
+
+## Monitoring and Testing
+
+### Check VNF Status
+```bash
+# View running containers
+docker ps
+
+# Check VNF logs
+docker logs vnf-firewall
+docker logs vnf-antivirus
+docker logs vnf-spamfilter
+docker logs vnf-encryption
+docker logs vnf-contentfilter
+```
+
+### Run Tests
+```bash
+# Run comprehensive VNF tests
+python scripts/vnf_test.py
+
+# Test individual VNFs
+python scripts/vnf_test.py --vnf firewall
+python scripts/vnf_test.py --vnf antivirus
+python scripts/vnf_test.py --vnf spamfilter
+python scripts/vnf_test.py --vnf encryption
+python scripts/vnf_test.py --vnf contentfilter
+```
+
+## Network Topology
+
+### Mininet Topology (Optional)
+- **Hosts**: 2 hosts (h1, h2)
+- **Switches**: 1 switch (s1)
+- **Controller**: OpenFlow controller
+- **VNFs**: 5 VNF containers connected to switch
+- **Links**: Hosts connected to switch, VNFs connected to switch
+
+### Docker Network
+- **Network**: vnf-network (bridge)
+- **Subnet**: 172.20.0.0/16
+- **VNFs**: Each VNF runs in its own container
+- **Communication**: Inter-container communication via Docker network
+
+## Security Features
+
+### Network Security
+- IP address filtering
+- Port-based access control
+- Traffic logging and monitoring
+- Packet inspection
+
+### Content Security
+- Malware detection
+- Spam filtering
+- Content policy enforcement
+- Data encryption
+
+### Monitoring and Logging
+- Real-time activity logging
+- Statistics tracking
+- Performance metrics
+- Error reporting
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Docker Build Failures**
+   - Ensure Docker is running
+   - Check Dockerfile syntax
+   - Verify Python dependencies
+
+2. **Container Startup Issues**
+   - Check container logs: `docker logs <container-name>`
+   - Verify port conflicts
+   - Check resource availability
+
+3. **Network Connectivity**
+   - Verify Docker network exists
+   - Check container IP addresses
+   - Test inter-container communication
+
+4. **Mininet Issues**
+   - Install Mininet: `sudo apt-get install mininet`
+   - Run with sudo privileges
+   - Check OpenFlow controller connectivity
+
+### Debug Commands
+```bash
+# Check Docker status
+docker info
+docker version
+
+# Check network connectivity
+docker network ls
+docker network inspect vnf-network
+
+# Check container resources
+docker stats
+
+# View detailed container info
+docker inspect <container-name>
+```
+
+## Development
+
+### Adding New VNFs
+1. Create new VNF directory
+2. Implement VNF logic in Python
+3. Create Dockerfile
+4. Add to orchestration scripts
+5. Update documentation
+
+### Modifying VNF Logic
+1. Edit VNF Python file
+2. Rebuild Docker image
+3. Restart container
+4. Test functionality
+
+### Customizing Configuration
+- Modify VNF parameters in Python files
+- Update Docker environment variables
+- Adjust network topology in scripts
+- Customize logging and monitoring
+
+## Performance Optimization
+
+### Resource Management
+- Monitor CPU and memory usage
+- Adjust container resource limits
+- Optimize VNF processing logic
+- Implement caching mechanisms
+
+### Network Optimization
+- Use efficient packet processing
+- Minimize network overhead
+- Implement connection pooling
+- Optimize routing algorithms
+
+## Future Enhancements
+
+### Planned Features
+- Web-based management interface
+- Advanced threat detection
+- Machine learning integration
+- Multi-cloud deployment
+- High availability configuration
+
+### Integration Possibilities
+- Kubernetes orchestration
+- OpenStack integration
+- SDN controller integration
+- Cloud-native deployment
+- Microservices architecture
+
+## Contributing
+
+### Development Setup
+1. Fork the repository
+2. Create feature branch
+3. Implement changes
+4. Add tests
+5. Submit pull request
+
+### Code Standards
+- Follow PEP 8 style guide
+- Add comprehensive documentation
+- Include unit tests
+- Maintain backward compatibility
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+For support and questions:
+- Create an issue on GitHub
+- Check the documentation
+- Review troubleshooting guide
+- Contact the development team
+
+================================================================================
+FILE: firewall/Dockerfile
+================================================================================
+
+FROM python:3.8-slim
+WORKDIR /app
+COPY firewall.py /app/
+CMD ["python", "-u", "firewall.py"]
+
+================================================================================
+FILE: firewall/firewall.py
+================================================================================
+
+#!/usr/bin/env python3
+"""
+Firewall VNF - Network-level security filtering
+Blocks specific IP addresses and ports, logs traffic
+"""
+
+import time
+import logging
+import threading
+from datetime import datetime
+import random
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+class FirewallVNF:
+    """Firewall VNF for network-level security filtering"""
+    
+    def __init__(self):
+        # Blocked IP addresses
+        self.blocked_ips = {
+            '192.168.1.100',
+            '10.0.0.50',
+            '172.16.0.25'
+        }
+        
+        # Allowed ports (email-related)
+        self.allowed_ports = {25, 587, 465, 993, 995}
+        
+        # Statistics
+        self.stats = {
+            'packets_processed': 0,
+            'packets_blocked': 0,
+            'packets_allowed': 0,
+            'start_time': datetime.now()
+        }
+        
+        logger.info("Firewall VNF initialized")
+        logger.info(f"Blocked IPs: {self.blocked_ips}")
+        logger.info(f"Allowed ports: {self.allowed_ports}")
+    
+    def inspect_packet(self, source_ip: str, dest_port: int) -> bool:
+        """Inspect packet and determine if it should be allowed"""
+        # Check if source IP is blocked
+        if source_ip in self.blocked_ips:
+            logger.warning(f"Blocked packet from blocked IP: {source_ip}")
+            return False
+        
+        # Check if destination port is allowed
+        if dest_port not in self.allowed_ports:
+            logger.warning(f"Blocked packet to unauthorized port: {dest_port}")
+            return False
+        
+        return True
+    
+    def process_traffic(self):
+        """Simulate traffic processing"""
+        while True:
+            try:
+                # Simulate incoming packets
+                source_ips = [
+                    '192.168.1.10', '192.168.1.20', '192.168.1.100',  # Last one is blocked
+                    '10.0.0.1', '10.0.0.50',  # Last one is blocked
+                    '172.16.0.1', '172.16.0.25'  # Last one is blocked
+                ]
+                
+                dest_ports = [25, 587, 465, 993, 995, 80, 443, 22]  # Mix of allowed and blocked
+                
+                # Process multiple packets
+                for _ in range(random.randint(1, 5)):
+                    source_ip = random.choice(source_ips)
+                    dest_port = random.choice(dest_ports)
+                    
+                    self.stats['packets_processed'] += 1
+                    
+                    if self.inspect_packet(source_ip, dest_port):
+                        self.stats['packets_allowed'] += 1
+                        logger.info(f"Allowed packet: {source_ip}:{dest_port}")
+                    else:
+                        self.stats['packets_blocked'] += 1
+                
+                time.sleep(random.uniform(1, 3))
+                
+            except KeyboardInterrupt:
+                logger.info("Firewall VNF stopping...")
+                break
+            except Exception as e:
+                logger.error(f"Error processing traffic: {e}")
+                time.sleep(1)
+    
+    def get_stats(self) -> dict:
+        """Get current statistics"""
+        uptime = datetime.now() - self.stats['start_time']
+        return {
+            **self.stats,
+            'uptime_seconds': uptime.total_seconds(),
+            'blocked_ips': list(self.blocked_ips),
+            'allowed_ports': list(self.allowed_ports)
+        }
+    
+    def report_stats(self):
+        """Report statistics periodically"""
+        while True:
+            try:
+                stats = self.get_stats()
+                logger.info(f"Firewall Stats: {stats}")
+                time.sleep(30)  # Report every 30 seconds
+            except KeyboardInterrupt:
+                break
+            except Exception as e:
+                logger.error(f"Error reporting stats: {e}")
+                time.sleep(30)
+
+def main():
+    """Main function"""
+    logger.info("Starting Firewall VNF...")
+    
+    firewall = FirewallVNF()
+    
+    # Start traffic processing in a separate thread
+    traffic_thread = threading.Thread(target=firewall.process_traffic, daemon=True)
+    traffic_thread.start()
+    
+    # Start stats reporting in a separate thread
+    stats_thread = threading.Thread(target=firewall.report_stats, daemon=True)
+    stats_thread.start()
+    
+    logger.info("Firewall VNF is running...")
+    
+    try:
+        # Keep main thread alive
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        logger.info("Shutting down Firewall VNF...")
+
+if __name__ == "__main__":
+    main()
+
+================================================================================
+FILE: antivirus/Dockerfile
+================================================================================

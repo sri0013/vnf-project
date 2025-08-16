@@ -1,0 +1,47 @@
+groups:
+  - name: vnf_alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: vnf_cpu_usage > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}"
+
+      - alert: HighMemoryUsage
+        expr: vnf_memory_usage > 85
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value }}% on {{ $labels.instance }}"
+
+      - alert: HighLatency
+        expr: vnf_processing_latency > 1000
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High latency detected on {{ $labels.instance }}"
+          description: "Processing latency is {{ $value }}ms on {{ $labels.instance }}"
+
+      - alert: VNFDown
+        expr: up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "VNF instance down: {{ $labels.instance }}"
+          description: "VNF instance {{ $labels.instance }} has been down for more than 30 seconds"
+
+      - alert: LowTraffic
+        expr: vnf_packets_processed < 10
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "Low traffic detected on {{ $labels.instance }}"
+          description: "Only {{ $value }} packets processed in the last 5 minutes"

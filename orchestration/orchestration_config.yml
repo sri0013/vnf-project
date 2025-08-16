@@ -1,0 +1,49 @@
+# VNF Orchestration Configuration
+vnf_types:
+  - firewall
+  - antivirus
+  - spamfilter
+  - encryption
+  - contentfilter
+
+# Scaling configuration
+min_instances: 1
+max_instances: 5
+
+# Scaling thresholds
+scaling_thresholds:
+  cpu_upper: 80      # Scale out when CPU > 80%
+  cpu_lower: 30      # Scale in when CPU < 30%
+  memory_upper: 85   # Scale out when memory > 85%
+  memory_lower: 40   # Scale in when memory < 40%
+  latency_upper: 1000  # Scale out when latency > 1000ms
+  latency_lower: 200   # Scale in when latency < 200ms
+
+# ARIMA forecasting configuration
+forecasting:
+  window_size: 20        # Number of data points for ARIMA model
+  forecast_steps: 3      # Number of steps to forecast ahead
+  confidence_threshold: 0.7  # Minimum confidence for forecasting decisions
+
+# Rolling update configuration
+rolling_update:
+  health_check_timeout: 30  # Seconds to wait for health check
+  drain_timeout: 60         # Seconds to drain connections
+  grace_period: 10          # Grace period before termination
+
+# Monitoring configuration
+monitoring:
+  metrics_interval: 30      # Seconds between metrics collection
+  orchestration_interval: 60  # Seconds between orchestration checks
+  prometheus_port: 9090     # Prometheus metrics port
+
+# SDN/Network configuration
+sdn:
+  controller_url: "http://localhost:8080"  # SDN controller URL
+  flow_update_timeout: 10   # Seconds to wait for flow updates
+
+# Docker configuration
+docker:
+  network_name: "vnf-network"  # Docker network for VNFs
+  image_prefix: "vnf-"         # Prefix for VNF images
+  metrics_port: 8080           # Port for VNF metrics endpoint
