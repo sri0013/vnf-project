@@ -6,7 +6,7 @@ This project implements a complete Service Function Chain (SFC) for email securi
 ## Architecture
 ```
 Email Flow: Host → [VNF Chain] → Mail Server → [VNF Chain] → Destination
-VNF Chain: Firewall → Antivirus → Spam Filter → Encryption → Content Filter
+VNF Chain: Firewall → Antivirus → Spam Filter → Encryption → Content Filter → Mail Server
 ```
 
 ## Project Structure
@@ -17,6 +17,7 @@ vnf-project/
 ├── spamfilter/            # Spam Filter VNF - Spam detection
 ├── encryption_gateway/    # Encryption VNF - Email encryption/decryption
 ├── content_filtering/     # Content Filter VNF - Policy enforcement
+├── mail/                  # Mail Server VNF - SMTP debug server
 ├── scripts/               # Mininet topology and orchestration
 └── README.md
 ```
@@ -66,6 +67,15 @@ vnf-project/
   - Compliance monitoring
 - **Processing**: Pattern matching and policy validation
 
+### 6. Mail Server VNF
+- **Purpose**: SMTP debug server for email testing
+- **Functions**:
+  - Provides SMTP server on port 2525
+  - Accepts and logs email connections
+  - Uses aiosmtpd for debugging
+  - No root privileges required
+- **Processing**: Email reception and logging
+
 ## Deployment Instructions
 
 ### Prerequisites
@@ -82,7 +92,11 @@ cd ../antivirus && docker build -t my-antivirus-vnf .
 cd ../spamfilter && docker build -t my-spamfilter-vnf .
 cd ../encryption_gateway && docker build -t my-encryption-vnf .
 cd ../content_filtering && docker build -t my-contentfilter-vnf .
+cd ../mail && docker build -t my-mail-vnf .
 ```
+
+# Or use the build script:
+./build_vnf_images.ps1
 
 ### Step 2: Push to Docker Hub (Windows)
 ```bash
@@ -98,6 +112,7 @@ docker push yourusername/vnf-firewall:latest
 docker push yourusername/vnf-antivirus:latest
 docker push yourusername/vnf-spamfilter:latest
 docker push yourusername/vnf-encryption:latest
+docker push yourusername/vnf-mail:latest
 docker push yourusername/vnf-contentfilter:latest
 ```
 
@@ -143,7 +158,16 @@ docker logs vnf-contentfilter
 ```bash
 # From Mininet CLI
 h1 ping 10.0.0.100  # Test connectivity to mail server
-h1 telnet 10.0.0.100 25  # Test SMTP connection
+h1 telnet 10.0.0.100 2525  # Test SMTP connection (port 2525)
+```
+
+### Test Mail Server Locally (Windows)
+```powershell
+# Test if mail server is accessible
+Test-NetConnection -ComputerName localhost -Port 2525
+
+# Run mail server container for local testing
+docker run -d --name vnf-mail-test -p 2525:2525 my-mail-vnf
 ```
 
 ### Simulate Email Flow
@@ -172,6 +196,8 @@ The VNFs automatically simulate email processing:
 2. **Network connectivity issues**: Verify Mininet topology
 3. **Permission errors**: Ensure sudo access for Mininet
 4. **Container conflicts**: Stop and remove existing containers
+5. **Docker not running**: Start Docker Desktop and wait for initialization
+6. **SMTP connection issues**: Verify port 2525 is accessible and container is running
 
 ## Development
 - Each VNF is containerized for easy deployment

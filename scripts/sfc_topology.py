@@ -25,7 +25,8 @@ def check_docker_images():
         'my-antivirus-vnf', 
         'my-spamfilter-vnf',
         'my-encryption-vnf',
-        'my-contentfilter-vnf'
+        'my-contentfilter-vnf',
+        'my-mail-vnf'
     ]
     
     missing_images = []
@@ -53,7 +54,7 @@ def check_docker_images():
 def cleanup_existing_containers():
     """Stop and remove existing VNF containers"""
     container_prefixes = ['vnf-firewall', 'vnf-antivirus', 'vnf-spamfilter', 
-                         'vnf-encryption', 'vnf-contentfilter']
+                         'vnf-encryption', 'vnf-contentfilter', 'vnf-mail']
     
     for prefix in container_prefixes:
         try:
@@ -126,7 +127,8 @@ def create_sfc_network():
         ('antivirus', 'my-antivirus-vnf', 'vnf-antivirus'), 
         ('spamfilter', 'my-spamfilter-vnf', 'vnf-spamfilter'),
         ('encryption', 'my-encryption-vnf', 'vnf-encryption'),
-        ('contentfilter', 'my-contentfilter-vnf', 'vnf-contentfilter')
+        ('contentfilter', 'my-contentfilter-vnf', 'vnf-contentfilter'),
+        ('mail', 'my-mail-vnf', 'vnf-mail')
     ]
     
     for vnf_name, image_name, container_name in vnfs:
@@ -148,7 +150,7 @@ def create_sfc_network():
             info(f"❌ Error starting {vnf_name} VNF: {e}\n")
     
     info(f"\n🔗 Service Function Chain Active with {len(vnf_containers)} VNFs\n")
-    info("VNF Chain: Firewall → Antivirus → Spam Filter → Encryption → Content Filter\n")
+    info("VNF Chain: Firewall → Antivirus → Spam Filter → Encryption → Content Filter → Mail Server\n")
     
     # Display network information
     info("\n📋 Network Topology:\n")
@@ -161,7 +163,7 @@ def create_sfc_network():
     net.ping([h1, h2])
     
     info("\n📧 Simulating mail flow through SFC...\n")
-    info("Mail from h1 → [VNF Chain] → mail server → [VNF Chain] → h2\n")
+    info("Mail from h1 → [VNF Chain] → mail server (port 2525) → [VNF Chain] → h2\n")
     
     # Display VNF monitoring commands
     info("\n📊 VNF Monitoring Commands:\n")
@@ -172,8 +174,9 @@ def create_sfc_network():
     info("\n💻 Entering Mininet CLI...\n")
     info("Try commands like:\n")
     info("  h1 ping 10.0.0.100\n")
-    info("  h1 telnet 10.0.0.100 25\n")
+    info("  h1 telnet 10.0.0.100 2525\n")
     info("  docker logs vnf-firewall\n")
+    info("  docker logs vnf-mail\n")
     info("  exit (to stop the network)\n")
     
     try:
@@ -200,7 +203,7 @@ def create_sfc_network():
 def main():
     """Main function"""
     info("🚀 VNF Service Function Chain Network\n")
-    info("Email Security SFC: Firewall → Antivirus → Spam Filter → Encryption → Content Filter\n")
+    info("Email Security SFC: Firewall → Antivirus → Spam Filter → Encryption → Content Filter → Mail Server\n")
     
     try:
         create_sfc_network()
