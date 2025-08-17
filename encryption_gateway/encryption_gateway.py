@@ -9,6 +9,7 @@ import base64
 import hashlib
 import threading
 from datetime import datetime
+from prometheus_client import start_http_server, Counter, Histogram
 
 class EncryptionGatewayVNF:
     def __init__(self):
@@ -28,6 +29,21 @@ class EncryptionGatewayVNF:
             'decryption_errors': 0,
             'total_processed': 0
         }
+
+        # Prometheus metrics
+        self.emails_processed_total = Counter(
+            'encryption_emails_processed_total',
+            'Total emails processed by encryption gateway',
+            ['action']  # encrypt_success, decrypt_success, encrypt_error, decrypt_error
+        )
+        self.processing_seconds = Histogram(
+            'encryption_processing_seconds',
+            'Time spent processing emails'
+        )
+
+        # Start metrics server
+        start_http_server(8080)
+        self.log("📈 Prometheus metrics server started on port 8080")
         
     def log(self, message):
         """Log encryption activities with timestamp"""
@@ -99,6 +115,7 @@ class EncryptionGatewayVNF:
         Returns:
             dict: Processing results
         """
+        start = time.time()
         self.stats['total_processed'] += 1
         
         if direction == "encrypt":
@@ -107,6 +124,8 @@ class EncryptionGatewayVNF:
             
             if encrypted:
                 self.stats['emails_encrypted'] += 1
+                self.emails_processed_total.labels(action='encrypt_success').inc()
+                self.processing_seconds.observe(time.time() - start)
                 self.log(f"✅ Email ENCRYPTED successfully")
                 self.log(f"   Original: {content[:30]}...")
                 self.log(f"   Encrypted: {encrypted[:30]}...")
@@ -118,6 +137,8 @@ class EncryptionGatewayVNF:
                     'result': encrypted
                 }
             else:
+                self.emails_processed_total.labels(action='encrypt_error').inc()
+                self.processing_seconds.observe(time.time() - start)
                 self.log(f"❌ Email encryption FAILED")
                 return {
                     'status': 'error',
@@ -131,6 +152,8 @@ class EncryptionGatewayVNF:
             
             if decrypted:
                 self.stats['emails_decrypted'] += 1
+                self.emails_processed_total.labels(action='decrypt_success').inc()
+                self.processing_seconds.observe(time.time() - start)
                 self.log(f"✅ Email DECRYPTED successfully")
                 self.log(f"   Encrypted: {content[:30]}...")
                 self.log(f"   Decrypted: {decrypted[:30]}...")
@@ -142,6 +165,8 @@ class EncryptionGatewayVNF:
                     'result': decrypted
                 }
             else:
+                self.emails_processed_total.labels(action='decrypt_error').inc()
+                self.processing_seconds.observe(time.time() - start)
                 self.log(f"❌ Email decryption FAILED")
                 return {
                     'status': 'error',

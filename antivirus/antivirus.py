@@ -8,6 +8,7 @@ import time
 import hashlib
 import threading
 from datetime import datetime
+from prometheus_client import start_http_server, Counter, Gauge, Histogram
 
 class AntivirusVNF:
     def __init__(self):
@@ -46,6 +47,21 @@ class AntivirusVNF:
             'suspicious_content': 0,
             'clean_files': 0
         }
+
+        # Prometheus metrics
+        self.emails_scanned_total = Counter(
+            'antivirus_emails_scanned_total',
+            'Total items scanned by antivirus',
+            ['result']  # clean, infected, suspicious
+        )
+        self.scan_duration_seconds = Histogram(
+            'antivirus_scan_duration_seconds',
+            'Time spent scanning content'
+        )
+
+        # Start Prometheus metrics server on 8080
+        start_http_server(8080)
+        self.log("📈 Prometheus metrics server started on port 8080")
         
     def log(self, message):
         """Log antivirus activities with timestamp"""
@@ -63,6 +79,7 @@ class AntivirusVNF:
         Returns:
             dict: Scan results with status and details
         """
+        start = time.time()
         self.stats['files_scanned'] += 1
         
         # Generate MD5 hash of content
@@ -72,6 +89,8 @@ class AntivirusVNF:
         if content_hash in self.virus_signatures:
             self.stats['viruses_detected'] += 1
             virus_name = self.virus_signatures[content_hash]
+            self.emails_scanned_total.labels(result='infected').inc()
+            self.scan_duration_seconds.observe(time.time() - start)
             self.log(f"🦠 VIRUS DETECTED! File: {filename}")
             self.log(f"   Hash: {content_hash}")
             self.log(f"   Virus: {virus_name}")
@@ -92,6 +111,8 @@ class AntivirusVNF:
         
         if suspicious_found:
             self.stats['suspicious_content'] += 1
+            self.emails_scanned_total.labels(result='suspicious').inc()
+            self.scan_duration_seconds.observe(time.time() - start)
             self.log(f"⚠️  SUSPICIOUS CONTENT DETECTED! File: {filename}")
             self.log(f"   Patterns: {suspicious_found}")
             self.log(f"   Action: FLAGGED FOR REVIEW")
@@ -103,6 +124,8 @@ class AntivirusVNF:
         
         # Content is clean
         self.stats['clean_files'] += 1
+        self.emails_scanned_total.labels(result='clean').inc()
+        self.scan_duration_seconds.observe(time.time() - start)
         self.log(f"✅ Content CLEAN. File: {filename}")
         self.log(f"   Hash: {content_hash}")
         return {

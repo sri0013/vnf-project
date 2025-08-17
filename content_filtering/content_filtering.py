@@ -8,6 +8,7 @@ import time
 import re
 import threading
 from datetime import datetime
+from prometheus_client import start_http_server, Counter, Histogram
 
 class ContentFilteringVNF:
     def __init__(self):
@@ -70,6 +71,25 @@ class ContentFilteringVNF:
             'content_blocked': 0,
             'content_allowed': 0
         }
+
+        # Prometheus metrics
+        self.content_scanned_total = Counter(
+            'contentfilter_items_scanned_total',
+            'Total content items scanned',
+            ['status']  # approved, blocked
+        )
+        self.content_size_bytes = Histogram(
+            'contentfilter_content_size_bytes',
+            'Size of scanned content (bytes)'
+        )
+        self.sensitive_data_total = Counter(
+            'contentfilter_sensitive_data_total',
+            'Total instances where sensitive data was detected'
+        )
+
+        # Start metrics server
+        start_http_server(8080)
+        self.log("📈 Prometheus metrics server started on port 8080")
         
     def log(self, message):
         """Log content filtering activities with timestamp"""
@@ -91,6 +111,9 @@ class ContentFilteringVNF:
         self.stats['content_scanned'] += 1
         violations = []
         sensitive_data = []
+
+        # Observe content size
+        self.content_size_bytes.observe(len(content))
         
         # Check 1: Prohibited patterns (sensitive data)
         for pattern, description in self.prohibited_patterns.items():
@@ -131,6 +154,7 @@ class ContentFilteringVNF:
             
             if sensitive_data:
                 self.stats['sensitive_data_detected'] += 1
+                self.sensitive_data_total.inc()
                 self.log(f"🚫 CONTENT BLOCKED - Sensitive Data Detected")
                 self.log(f"   File: {filename}")
                 self.log(f"   Sender: {sender}")
@@ -143,6 +167,7 @@ class ContentFilteringVNF:
                 self.log(f"   Violations: {violations}")
                 self.log(f"   Action: BLOCKED")
             
+            self.content_scanned_total.labels(status='blocked').inc()
             return {
                 'status': 'blocked',
                 'violations': violations,
@@ -152,6 +177,7 @@ class ContentFilteringVNF:
             }
         else:
             self.stats['content_allowed'] += 1
+            self.content_scanned_total.labels(status='approved').inc()
             self.log(f"✅ Content APPROVED - No policy violations")
             self.log(f"   File: {filename}")
             self.log(f"   Sender: {sender}")

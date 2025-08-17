@@ -8,6 +8,7 @@ import time
 import re
 import threading
 from datetime import datetime
+from prometheus_client import start_http_server, Counter, Histogram
 
 class SpamFilterVNF:
     def __init__(self):
@@ -62,6 +63,21 @@ class SpamFilterVNF:
             'legitimate_emails': 0,
             'average_spam_score': 0.0
         }
+
+        # Prometheus metrics
+        self.emails_processed_total = Counter(
+            'spamfilter_emails_processed_total',
+            'Total emails processed by spam filter',
+            ['status']  # spam, legitimate
+        )
+        self.spam_score_histogram = Histogram(
+            'spamfilter_score',
+            'Spam score distribution'
+        )
+
+        # Start metrics server on 8080
+        start_http_server(8080)
+        self.log("📈 Prometheus metrics server started on port 8080")
         
     def log(self, message):
         """Log spam filter activities with timestamp"""
@@ -129,9 +145,11 @@ class SpamFilterVNF:
         # Determine spam threshold
         spam_threshold = 20  # Emails with score >= 20 are considered spam
         
-        # Update statistics
+        # Update statistics and metrics
+        self.spam_score_histogram.observe(spam_score)
         if spam_score >= spam_threshold:
             self.stats['spam_detected'] += 1
+            self.emails_processed_total.labels(status='spam').inc()
             self.log(f"🚫 SPAM DETECTED! Score: {spam_score}")
             self.log(f"   Subject: {email_subject[:50]}...")
             self.log(f"   Sender: {sender_email}")
@@ -145,6 +163,7 @@ class SpamFilterVNF:
             }
         else:
             self.stats['legitimate_emails'] += 1
+            self.emails_processed_total.labels(status='legitimate').inc()
             self.log(f"✅ Email PASSED spam filter")
             self.log(f"   Subject: {email_subject[:50]}...")
             self.log(f"   Sender: {sender_email}")

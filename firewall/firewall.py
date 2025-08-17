@@ -8,6 +8,7 @@ import time
 import socket
 import threading
 from datetime import datetime
+from prometheus_client import start_http_server, Counter, Gauge, Histogram
 
 class FirewallVNF:
     def __init__(self):
@@ -35,6 +36,26 @@ class FirewallVNF:
             'packets_blocked': 0,
             'packets_allowed': 0
         }
+
+        # Prometheus metrics
+        self.packets_total = Counter(
+            'firewall_packets_total',
+            'Total packets processed by firewall',
+            ['action']  # allowed, blocked
+        )
+        self.packet_processing_seconds = Histogram(
+            'firewall_packet_processing_seconds',
+            'Time spent inspecting packets'
+        )
+        self.blocked_ip_count = Gauge(
+            'firewall_blocked_ip_count',
+            'Number of configured blocked IPs'
+        )
+        self.blocked_ip_count.set(len(self.blocked_ips))
+
+        # Start Prometheus metrics server on 8080 (scraped at /metrics)
+        start_http_server(8080)
+        self.log("📈 Prometheus metrics server started on port 8080")
         
     def log(self, message):
         """Log firewall activities with timestamp"""
@@ -54,18 +75,23 @@ class FirewallVNF:
         Returns:
             bool: True if packet is allowed, False if blocked
         """
+        start = time.time()
         self.stats['packets_processed'] += 1
         
         # Rule 1: Check if source IP is blocked
         if source_ip in self.blocked_ips:
             self.stats['packets_blocked'] += 1
+            self.packets_total.labels(action='blocked').inc()
             self.log(f"🚫 BLOCKED: Traffic from blocked IP {source_ip} to {dest_ip}:{dest_port}")
+            self.packet_processing_seconds.observe(time.time() - start)
             return False
         
         # Rule 2: Check if destination port is allowed
         if dest_port not in self.allowed_ports:
             self.stats['packets_blocked'] += 1
+            self.packets_total.labels(action='blocked').inc()
             self.log(f"🚫 BLOCKED: Port {dest_port} not allowed for {source_ip} -> {dest_ip}")
+            self.packet_processing_seconds.observe(time.time() - start)
             return False
         
         # Rule 3: Check for suspicious patterns (example: high port scanning)
@@ -74,7 +100,9 @@ class FirewallVNF:
         
         # Packet passed all rules
         self.stats['packets_allowed'] += 1
+        self.packets_total.labels(action='allowed').inc()
         self.log(f"✅ ALLOWED: {source_ip} -> {dest_ip}:{dest_port} ({protocol})")
+        self.packet_processing_seconds.observe(time.time() - start)
         return True
     
     def get_statistics(self):
