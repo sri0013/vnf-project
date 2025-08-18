@@ -274,6 +274,16 @@ Monitoring commands available:
 - docker logs vnf-encryption
 - docker logs vnf-contentfilter
 
+Accessing dashboards in a full VM vs inside VM/WSL2:
+- Inside the VM/WSL2:
+  - Prometheus: http://localhost:9090
+  - Grafana: http://localhost:3000 (admin/admin)
+- From Windows host (full VM):
+  - Prometheus: http://<VM_IP>:9090
+  - Grafana: http://<VM_IP>:3000
+  - Find <VM_IP> in the VM via: ip addr (look for 192.168.x.x) or hostname -I
+  - If unreachable, use Bridged networking or configure NAT port forwarding for 9090 and 3000.
+
 Each VNF provides:
 - Real-time activity logging
 - Statistics tracking

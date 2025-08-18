@@ -105,6 +105,11 @@ All email traffic flows through the complete security chain before reaching the 
 
 ## Troubleshooting
 
+### Accessing services from Windows when running in a full VM
+- Find the VM IP in the Linux VM: `ip addr` (look for 192.168.x.x) or `hostname -I`.
+- From Windows, use that IP instead of localhost when accessing services exposed by containers.
+- If using NAT networking, configure port forwarding in the VM for the needed ports (e.g., 2525, 9090, 3000).
+
 ### Docker Not Running
 - Start Docker Desktop from the Start Menu or Desktop shortcut
 - Wait for it to fully initialize (may take 1-2 minutes)

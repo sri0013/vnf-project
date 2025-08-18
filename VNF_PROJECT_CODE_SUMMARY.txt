@@ -4,6 +4,7 @@ VNF SERVICE FUNCTION CHAIN PROJECT - COMPLETE CODE SUMMARY
 UPDATE LOG
 ==========
 2025-08-17T10:16:23Z - Reviewed the directory, opened this file, and added this UPDATE LOG entry documenting the actions taken.
+2025-08-18T15:01:50Z - Updated monitoring access instructions for full VM vs inside-VM, aligned with docker compose v2/v1 usage.
 PROJECT STRUCTURE:
 vnf-project/
 ├── README.md                           # Main project documentation
@@ -211,7 +212,9 @@ QUICK START:
 ADVANCED DEPLOYMENT:
 1. Build orchestration images: cd orchestration && python start_orchestration.py build
 2. Start complete stack: python start_orchestration.py
-3. Access monitoring: http://localhost:9090 (Prometheus), http://localhost:3000 (Grafana)
+3. Access monitoring:
+   - Inside the VM: http://localhost:9090 (Prometheus), http://localhost:3000 (Grafana)
+   - From Windows host: http://<VM_IP>:9090 and http://<VM_IP>:3000 (find IP via `ip addr`)
 
 TESTING:
 1. Run comprehensive tests: python scripts/vnf_test.py

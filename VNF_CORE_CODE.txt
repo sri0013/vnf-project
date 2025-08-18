@@ -4,6 +4,7 @@ VNF SERVICE FUNCTION CHAIN - CORE IMPLEMENTATION CODE
 UPDATE LOG
 ==========
 2025-08-17T10:16:23Z - Reviewed the directory, opened this file, and added this UPDATE LOG entry documenting the actions taken.
+2025-08-18T15:01:50Z - Reviewed core code; no compose or URL adjustments required. Kept consistent with orchestration updates.
 ================================================================================
 FIREWALL VNF IMPLEMENTATION
 ================================================================================

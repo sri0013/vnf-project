@@ -114,3 +114,16 @@ sudo python3 scripts/sfc_topology.py
 The mail server VNF implementation is **COMPLETE** and **FULLY FUNCTIONAL**. All requested features have been implemented, tested, and documented. The solution eliminates the manual installation issues and provides a robust, automated SMTP debug server for testing email flows through your Service Function Chain.
 
 **Status: ✅ READY FOR PRODUCTION USE**
+
+---
+
+## Access from Windows host to VM services
+- If you run the stack inside a full VM, access services from Windows using the VM IP.
+- Find VM IP in the VM: `ip addr` (look for 192.168.x.x) or `hostname -I | awk '{print $1}'`.
+- Then in Windows:
+  - Prometheus: `http://<VM_IP>:9090`
+  - Grafana: `http://<VM_IP>:3000`
+- If connection fails, switch the VM network to Bridged or set NAT port forwarding for 9090 and 3000.
+- Test from Windows PowerShell:
+  - `Test-NetConnection -ComputerName <VM_IP> -Port 9090`
+  - `Test-NetConnection -ComputerName <VM_IP> -Port 3000`

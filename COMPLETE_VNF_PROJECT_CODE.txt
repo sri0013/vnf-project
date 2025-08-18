@@ -102,6 +102,22 @@ This project implements a complete Virtual Network Function (VNF) Service Functi
 
 ## Deployment Instructions
 
+### Orchestration stack (Prometheus/Grafana) quick run
+- Inside Linux VM or WSL2 terminal:
+  
+  cd ~/vnf-project/orchestration
+  
+  docker compose up -d
+  
+  If using Docker Compose v1:
+  
+  docker-compose up -d
+
+- Access dashboards:
+  - Inside the VM/WSL2: http://localhost:9090 (Prometheus), http://localhost:3000 (Grafana, admin/admin)
+  - From Windows host (full VM): http://<VM_IP>:9090 and http://<VM_IP>:3000
+    - Find <VM_IP> in the VM via: ip addr (look for 192.168.x.x)
+
 ### Prerequisites
 - Docker installed and running
 - Python 3.8+ (for local development)
@@ -242,6 +258,12 @@ python scripts/vnf_test.py --vnf contentfilter
 - Error reporting
 
 ## Troubleshooting
+
+### Connectivity from Windows to VM services
+- Ensure the VM network is set to Bridged or configure NAT port forwarding for 9090 and 3000.
+- From Windows PowerShell, test connectivity:
+  Test-NetConnection -ComputerName <VM_IP> -Port 9090
+  Test-NetConnection -ComputerName <VM_IP> -Port 3000
 
 ### Common Issues
 
