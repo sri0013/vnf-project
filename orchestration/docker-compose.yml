@@ -78,7 +78,7 @@ services:
 
   # VNF Instances (initial deployment)
   vnf-firewall-1:
-    image: vnf-firewall:latest
+    image: my-firewall-vnf:latest
     container_name: vnf-firewall-1
     ports:
       - "8081:8080"

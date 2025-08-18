@@ -114,11 +114,11 @@ git clone <repository-url>
 cd vnf-project
 
 # Build Docker images
-cd firewall && docker build -t vnf-firewall:latest .
-cd ../antivirus && docker build -t vnf-antivirus:latest .
-cd ../spamfilter && docker build -t vnf-spamfilter:latest .
-cd ../encryption_gateway && docker build -t vnf-encryption:latest .
-cd ../content_filtering && docker build -t vnf-contentfilter:latest .
+cd firewall && docker build -t my-firewall-vnf:latest .
+cd ../antivirus && docker build -t my-antivirus-vnf:latest .
+cd ../spamfilter && docker build -t my-spamfilter-vnf:latest .
+cd ../encryption_gateway && docker build -t my-encryption-vnf:latest .
+cd ../content_filtering && docker build -t my-contentfilter-vnf:latest .
 
 # Run the SFC network
 python scripts/sfc_topology_simple.py
@@ -131,11 +131,11 @@ git clone <repository-url>
 cd vnf-project
 
 # Build Docker images
-cd firewall && docker build -t vnf-firewall:latest .
-cd ../antivirus && docker build -t vnf-antivirus:latest .
-cd ../spamfilter && docker build -t vnf-spamfilter:latest .
-cd ../encryption_gateway && docker build -t vnf-encryption:latest .
-cd ../content_filtering && docker build -t vnf-contentfilter:latest .
+cd firewall && docker build -t my-firewall-vnf:latest .
+cd ../antivirus && docker build -t my-antivirus-vnf:latest .
+cd ../spamfilter && docker build -t my-spamfilter-vnf:latest .
+cd ../encryption_gateway && docker build -t my-encryption-vnf:latest .
+cd ../content_filtering && docker build -t my-contentfilter-vnf:latest .
 
 # Run with Mininet (optional)
 sudo python3 scripts/sfc_topology.py
@@ -147,11 +147,11 @@ python3 scripts/sfc_topology_simple.py
 ### Push to Docker Hub
 ```bash
 # Tag images with your username
-docker tag vnf-firewall:latest <username>/vnf-firewall:latest
-docker tag vnf-antivirus:latest <username>/vnf-antivirus:latest
-docker tag vnf-spamfilter:latest <username>/vnf-spamfilter:latest
-docker tag vnf-encryption:latest <username>/vnf-encryption:latest
-docker tag vnf-contentfilter:latest <username>/vnf-contentfilter:latest
+docker tag my-firewall-vnf:latest <username>/vnf-firewall:latest
+docker tag my-antivirus-vnf:latest <username>/vnf-antivirus:latest
+docker tag my-spamfilter-vnf:latest <username>/vnf-spamfilter:latest
+docker tag my-encryption-vnf:latest <username>/vnf-encryption:latest
+docker tag my-contentfilter-vnf:latest <username>/vnf-contentfilter:latest
 
 # Push to Docker Hub
 docker push <username>/vnf-firewall:latest

@@ -707,11 +707,11 @@ def log(message):
 
 def check_docker_images():
     required_images = [
-        'vnf-firewall:latest',
-        'vnf-antivirus:latest', 
-        'vnf-spamfilter:latest',
-        'vnf-encryption:latest',
-        'vnf-contentfilter:latest'
+        'my-firewall-vnf:latest',
+        'my-antivirus-vnf:latest', 
+        'my-spamfilter-vnf:latest',
+        'my-encryption-vnf:latest',
+        'my-contentfilter-vnf:latest'
     ]
     
     missing_images = []
@@ -749,11 +749,11 @@ def create_sfc_network():
     
     # Start VNF containers
     vnf_configs = [
-        ('vnf-firewall', 'vnf-firewall:latest', '8081'),
-        ('vnf-antivirus', 'vnf-antivirus:latest', '8082'),
-        ('vnf-spamfilter', 'vnf-spamfilter:latest', '8083'),
-        ('vnf-encryption', 'vnf-encryption:latest', '8084'),
-        ('vnf-contentfilter', 'vnf-contentfilter:latest', '8085')
+        ('vnf-firewall', 'my-firewall-vnf:latest', '8081'),
+        ('vnf-antivirus', 'my-antivirus-vnf:latest', '8082'),
+        ('vnf-spamfilter', 'my-spamfilter-vnf:latest', '8083'),
+        ('vnf-encryption', 'my-encryption-vnf:latest', '8084'),
+        ('vnf-contentfilter', 'my-contentfilter-vnf:latest', '8085')
     ]
     
     for container_name, image, port in vnf_configs:
