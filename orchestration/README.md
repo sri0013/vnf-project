@@ -99,6 +99,49 @@ rolling_update:
 
 ## Deployment
 
+### Run Prometheus and Grafana (VM/WSL2) and Access from Windows
+
+1) Bring up the stack with Docker Compose (recommended):
+
+- From your Linux VM or WSL2 terminal:
+  
+  cd ~/vnf-project/orchestration
+  
+  docker compose up -d
+  
+  If using Docker Compose v1:
+  
+  docker-compose up -d
+
+2) Access the dashboards
+
+- From inside the VM/WSL2:
+  - Prometheus: http://localhost:9090
+  - Grafana: http://localhost:3000 (default login: admin / admin)
+
+- From Windows host:
+  - If using WSL2 with Docker Desktop: http://localhost:9090 and http://localhost:3000
+  - If using a full VM (e.g., VirtualBox/VMware):
+    - Find VM IP in the VM terminal: ip addr (look for 192.168.x.x)
+    - In Windows browser: http://192.168.x.x:9090 and http://192.168.x.x:3000
+    - If unreachable, use Bridged networking or set up port forwarding in VM settings.
+
+3) Quick checks if something doesn’t show up
+
+- Container status and logs:
+  - docker ps
+  - docker logs prometheus
+  - docker logs grafana
+- Verify ports (Linux):
+  - ss -tulpn | grep -E ":3000|:9090"
+- Test from Windows PowerShell:
+  - Test-NetConnection -ComputerName 192.168.x.x -Port 3000
+  - Test-NetConnection -ComputerName 192.168.x.x -Port 9090
+
+Notes:
+- Prometheus config and rules are mounted read-only into the container.
+- Inside the Docker network, Prometheus scrapes VNF services by their compose service names (e.g., vnf-firewall-1:8080).
+
 ### Quick Start with Docker Compose
 ```bash
 # Build and start the complete orchestration stack

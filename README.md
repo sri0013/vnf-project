@@ -78,6 +78,26 @@ vnf-project/
 
 ## Deployment Instructions
 
+### Quick run of Prometheus and Grafana (VM/WSL2 + Windows access)
+- Open a Linux VM or WSL2 shell and run:
+  
+  cd ~/vnf-project/orchestration
+  
+  docker compose up -d
+  
+  If using Docker Compose v1:
+  
+  docker-compose up -d
+
+- Access dashboards:
+  - From VM/WSL2: Prometheus http://localhost:9090, Grafana http://localhost:3000 (admin/admin)
+  - From Windows host:
+    - WSL2: http://localhost:9090 and http://localhost:3000
+    - Full VM: find the VM IP (ip addr shows 192.168.x.x) then use http://192.168.x.x:9090 and http://192.168.x.x:3000
+    - If needed, enable Bridged networking or port forwarding in the VM settings.
+
+See orchestration/README.md for details and troubleshooting.
+
 ### Prerequisites
 - Docker installed
 - Python 3.8+
