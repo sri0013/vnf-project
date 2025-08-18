@@ -44,6 +44,7 @@ services:
       context: .
       dockerfile: Dockerfile.orchestrator
     container_name: vnf-orchestrator
+    user: root
     ports:
       - "9091:9090"  # Prometheus metrics port
     volumes:
@@ -141,6 +142,21 @@ services:
     environment:
       - VNF_TYPE=contentfilter
       - INSTANCE_ID=contentfilter-1
+    networks:
+      - vnf-network
+    restart: unless-stopped
+    depends_on:
+      - sdn-controller
+
+  # Mail server VNF (SMTP debug)
+  vnf-mail-1:
+    image: my-mail-vnf:latest
+    container_name: vnf-mail-1
+    ports:
+      - "2525:2525"
+    environment:
+      - VNF_TYPE=mail
+      - INSTANCE_ID=mail-1
     networks:
       - vnf-network
     restart: unless-stopped

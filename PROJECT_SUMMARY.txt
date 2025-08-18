@@ -246,6 +246,14 @@ Solution: Clarified environment differences and provided appropriate commands
 Problem: Images not found during orchestration
 Solution: Built all images successfully and verified with docker images command
 
+5. Orchestrator Docker Socket Permissions
+----------------------------------------
+Problem: PermissionError [Errno 13] when orchestrator accesses /var/run/docker.sock inside container
+Solution: Mounted the Docker socket into the orchestrator container and ran it as root in docker-compose.yml:
+- volumes: - /var/run/docker.sock:/var/run/docker.sock
+- user: root
+Note (Windows): Ensure Docker Desktop runs the Linux backend (WSL2) so the Unix socket is available to Linux containers.
+
 CURRENT STATUS
 ==============
 ✅ Project structure completely created

@@ -198,6 +198,7 @@ The VNFs automatically simulate email processing:
 4. **Container conflicts**: Stop and remove existing containers
 5. **Docker not running**: Start Docker Desktop and wait for initialization
 6. **SMTP connection issues**: Verify port 2525 is accessible and container is running
+7. **Orchestrator PermissionError on /var/run/docker.sock**: The compose file mounts the Docker socket and now runs the orchestrator as root (user: root). Make sure Docker Desktop is using the Linux backend (WSL2) so the Unix socket is available inside Linux containers.
 
 ## Development
 - Each VNF is containerized for easy deployment

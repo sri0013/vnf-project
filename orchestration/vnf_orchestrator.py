@@ -333,7 +333,7 @@ class VNFOrchestrator:
     def _create_vnf_instance(self, vnf_type: str) -> Optional[str]:
         """Create a new VNF instance"""
         try:
-            image_name = f"vnf-{vnf_type}"
+            image_name = f"my-{vnf_type}-vnf"
             container_name = f"{vnf_type}-{int(time.time())}"
             
             container = self.docker_client.containers.run(

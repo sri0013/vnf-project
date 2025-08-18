@@ -154,6 +154,11 @@ DEPLOYMENT OPTIONS
 - Prometheus, Grafana, SDN Controller, VNF Orchestrator
 - Production-ready deployment
 
+Docker Socket Access (Important)
+- The vnf-orchestrator service mounts the Docker socket: /var/run/docker.sock:/var/run/docker.sock
+- It runs as root (user: root) to avoid PermissionError on the socket.
+- On Windows, use Docker Desktop (Linux backend/WSL2) so the Unix socket is available inside Linux containers.
+
 ================================================================================
 KEY FEATURES IMPLEMENTED
 ================================================================================

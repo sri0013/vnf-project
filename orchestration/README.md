@@ -111,6 +111,11 @@ docker-compose ps
 docker-compose logs -f vnf-orchestrator
 ```
 
+Note:
+- The compose service vnf-orchestrator mounts the Docker socket: /var/run/docker.sock:/var/run/docker.sock
+- It is configured to run as root (user: root) to avoid permission errors when accessing the Docker daemon.
+- On Windows, ensure Docker Desktop uses the Linux backend (WSL2) so the Unix socket is available to Linux containers.
+
 ### Manual Deployment
 ```bash
 # 1. Start Prometheus
