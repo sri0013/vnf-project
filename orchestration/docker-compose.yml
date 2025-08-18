@@ -43,6 +43,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.orchestrator
+    image: vnf-orchestrator:latest
     container_name: vnf-orchestrator
     user: root
     ports:

@@ -129,11 +129,14 @@ docker build -f Dockerfile.sdn -t sdn-controller .
 docker run -d --name sdn-controller -p 8080:8080 sdn-controller
 
 # 3. Start VNF Orchestrator
-docker build -f Dockerfile.orchestrator -t vnf-orchestrator .
+# Build and tag the orchestrator image
+docker build -f Dockerfile.orchestrator -t vnf-orchestrator:latest .
+# Run it
 docker run -d --name vnf-orchestrator \
   -p 9091:9090 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  vnf-orchestrator
+  --user root \
+  vnf-orchestrator:latest
 ```
 
 ## Monitoring and Visualization
