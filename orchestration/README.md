@@ -243,6 +243,18 @@ curl http://localhost:9091/metrics
 curl http://localhost:8080/health
 ```
 
+### Troubleshooting: KeyError 'ContainerConfig' for vnf-orchestrator
+If you see KeyError: 'ContainerConfig' during compose up:
+1) Clean old containers/images and rebuild orchestrator only
+   - docker compose -f orchestration/docker-compose.yml down
+   - docker rm -f vnf-orchestrator 2>$null
+   - docker rmi -f vnf-orchestrator:latest 2>$null
+   - docker images | Select-String orchestrator | ForEach-Object { $_.ToString().Split()[2] } | ForEach-Object { docker rmi -f $_ }
+2) Build without cache and start only orchestrator
+   - docker compose -f orchestration/docker-compose.yml build --no-cache vnf-orchestrator
+   - docker compose -f orchestration/docker-compose.yml up vnf-orchestrator
+3) Ensure compose service uses only build: (no image:) while debugging (already configured here).
+
 ## Performance Optimization
 
 ### ARIMA Model Tuning
