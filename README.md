@@ -9,6 +9,27 @@ Email Flow: Host → [VNF Chain] → Mail Server → [VNF Chain] → Destination
 VNF Chain: Firewall → Antivirus → Spam Filter → Encryption → Content Filter → Mail Server
 ```
 
+## Diagram workflow (CLI + Git)
+- Generate/update the PlantUML diagram source from the template:
+  - Linux/macOS:
+    ```bash
+    ./gen.sh "DRL-Based SFC Provisioning with Forecasting & Monitoring"
+    ```
+  - Windows (PowerShell):
+    ```powershell
+    ./gen.ps1 -Title "DRL-Based SFC Provisioning with Forecasting & Monitoring"
+    ```
+- If PlantUML is installed, the scripts auto-render an image; otherwise, render manually:
+  ```bash
+  plantuml diagram.puml
+  ```
+- Commit and push:
+  ```bash
+  git add diagram.puml
+  git commit -m "feat: update architecture diagram"
+  git push
+  ```
+
 ## Project Structure
 ```
 vnf-project/
