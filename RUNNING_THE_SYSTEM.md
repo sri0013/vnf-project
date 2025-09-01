@@ -1,18 +1,8 @@
 # Running the VNF Orchestration System
 
-## 🚀 Quick Start
+## 🚀 **CORRECT WAY TO RUN (Recommended)**
 
-### Option 1: Run from Project Root (Recommended)
-
-```bash
-# Navigate to the project root directory
-cd /path/to/vnf-project
-
-# Run the startup script
-python start_orchestration.py
-```
-
-### Option 2: Run as Python Module
+### **Option 1: Run as Python Module (Production)**
 
 ```bash
 # Navigate to the project root directory
@@ -22,7 +12,17 @@ cd /path/to/vnf-project
 python -m orchestration.integrated_system
 ```
 
-### Option 3: Test Individual Components
+### **Option 2: Use the Runner Script**
+
+```bash
+# Navigate to the project root directory
+cd /path/to/vnf-project
+
+# Use the runner script (which calls the module)
+python run_orchestration.py
+```
+
+### **Option 3: Test Individual Components**
 
 ```bash
 # Navigate to the project root directory
@@ -32,33 +32,46 @@ cd /path/to/vnf-project
 python test_orchestration.py
 ```
 
-## 🔧 Why This Approach?
+## 🔧 **Why This Approach?**
 
 The **relative import error** occurs because:
 
 1. **Python Package Structure**: The `orchestration/` directory is a Python package
-2. **Relative Imports**: Files use `from .metrics_registry import ...` syntax
+2. **Relative Imports**: Files use `from .metrics_registry import ...` syntax (correct for packages)
 3. **Script vs Module**: Running `python orchestration/vnf_orchestrator.py` treats it as a script, not a module
 4. **Import Resolution**: Python can't resolve relative imports when running as a script
 
-## 📁 Project Structure
+## 📁 **Project Structure**
 
 ```
 vnf-project/
 ├── orchestration/                 # Python package
 │   ├── __init__.py               # Package initialization
-│   ├── vnf_orchestrator.py      # VNF orchestration logic
-│   ├── sdn_controller.py        # SDN controller
-│   ├── metrics_registry.py      # Centralized metrics
+│   ├── vnf_orchestrator.py      # VNF orchestration logic (uses relative imports)
+│   ├── sdn_controller.py        # SDN controller (uses relative imports)
+│   ├── metrics_registry.py      # Centralized metrics (uses relative imports)
 │   └── ...                      # Other components
-├── start_orchestration.py        # Main startup script
-├── test_orchestration.py         # Test suite
+├── run_orchestration.py          # Runner script (calls module)
+├── start_orchestration.py        # Alternative startup (absolute imports)
+├── test_orchestration.py         # Test suite (absolute imports)
 └── requirements.txt              # Dependencies
 ```
 
-## 🧪 Testing the System
+## 🎯 **Import Strategy**
 
-### 1. Test Metrics Registry
+### **Inside the Package (orchestration/ directory)**
+- ✅ **Use relative imports**: `from .metrics_registry import ...`
+- ✅ **Correct for package-internal imports**
+- ✅ **Maintains package structure**
+
+### **Outside the Package (project root)**
+- ✅ **Use absolute imports**: `from orchestration.metrics_registry import ...`
+- ✅ **Correct when importing from outside the package**
+- ✅ **Works with module execution**
+
+## 🧪 **Testing the System**
+
+### **1. Test Metrics Registry**
 
 ```bash
 cd vnf-project
@@ -72,7 +85,7 @@ This will:
 - ✅ Test SDN controller
 - ✅ Test async operations
 
-### 2. Manual Component Testing
+### **2. Manual Component Testing**
 
 ```bash
 cd vnf-project
@@ -90,9 +103,9 @@ print('✅ VNF orchestrator imported successfully')
 "
 ```
 
-## 🚨 Common Errors and Solutions
+## 🚨 **Common Errors and Solutions**
 
-### Error 1: ImportError: attempted relative import with no known parent package
+### **Error 1: ImportError: attempted relative import with no known parent package**
 
 **Cause**: Running a file directly instead of as a module
 
@@ -102,12 +115,10 @@ print('✅ VNF orchestrator imported successfully')
 python orchestration/vnf_orchestrator.py
 
 # ✅ Correct - runs as module
-python -m orchestration.vnf_orchestrator
-# OR
-python start_orchestration.py
+python -m orchestration.integrated_system
 ```
 
-### Error 2: ModuleNotFoundError: No module named 'orchestration'
+### **Error 2: ModuleNotFoundError: No module named 'orchestration'**
 
 **Cause**: Not in the correct directory
 
@@ -115,14 +126,14 @@ python start_orchestration.py
 ```bash
 # ❌ Wrong directory
 cd /some/other/path
-python start_orchestration.py
+python -m orchestration.integrated_system
 
 # ✅ Correct directory
 cd /path/to/vnf-project
-python start_orchestration.py
+python -m orchestration.integrated_system
 ```
 
-### Error 3: Port Already in Use
+### **Error 3: Port Already in Use**
 
 **Cause**: Another instance is running
 
@@ -135,9 +146,9 @@ netstat -tulpn | grep :8080
 # Kill the process or use different ports
 ```
 
-## 🔍 Debugging Import Issues
+## 🔍 **Debugging Import Issues**
 
-### 1. Check Python Path
+### **1. Check Python Path**
 
 ```python
 import sys
@@ -146,7 +157,7 @@ for path in sys.path:
     print(f"  {path}")
 ```
 
-### 2. Check Current Directory
+### **2. Check Current Directory**
 
 ```python
 import os
@@ -154,7 +165,7 @@ print(f"Current working directory: {os.getcwd()}")
 print(f"Script location: {os.path.dirname(os.path.abspath(__file__))}")
 ```
 
-### 3. Verify Package Structure
+### **3. Verify Package Structure**
 
 ```bash
 # Check if __init__.py exists
@@ -164,26 +175,36 @@ ls -la orchestration/__init__.py
 python -c "import orchestration; print('Package imported successfully')"
 ```
 
-## 🎯 Best Practices
+## 🎯 **Best Practices**
 
-### 1. Always Run from Project Root
+### **1. Always Run from Project Root**
 
 ```bash
 cd vnf-project
-python start_orchestration.py
+python -m orchestration.integrated_system
 ```
 
-### 2. Use Absolute Imports in Scripts
+### **2. Use Relative Imports Inside Package**
 
 ```python
-# ✅ Good - absolute import
+# ✅ Good - relative import (inside orchestration/ directory)
+from .metrics_registry import start_metrics_server
+
+# ❌ Avoid - absolute import (inside package)
+from orchestration.metrics_registry import start_metrics_server
+```
+
+### **3. Use Absolute Imports Outside Package**
+
+```python
+# ✅ Good - absolute import (from project root)
 from orchestration.metrics_registry import start_metrics_server
 
-# ❌ Avoid - relative import in scripts
+# ❌ Avoid - relative import (from outside package)
 from .metrics_registry import start_metrics_server
 ```
 
-### 3. Test Before Running
+### **4. Test Before Running**
 
 ```bash
 # Quick import test
@@ -193,7 +214,7 @@ python -c "from orchestration.vnf_orchestrator import VNFOrchestrator; print('OK
 python test_orchestration.py
 ```
 
-## 📊 System Endpoints
+## 📊 **System Endpoints**
 
 Once running successfully:
 
@@ -201,30 +222,33 @@ Once running successfully:
 - **SDN Controller**: http://localhost:8080
 - **VNF Health Checks**: http://localhost:8080/health
 
-## 🛠️ Development Workflow
+## 🛠️ **Development Workflow**
 
-### 1. Make Changes
+### **1. Make Changes**
 
 ```bash
 # Edit files in orchestration/ directory
 vim orchestration/vnf_orchestrator.py
 ```
 
-### 2. Test Changes
+### **2. Test Changes**
 
 ```bash
 # Run tests to verify
 python test_orchestration.py
 ```
 
-### 3. Run System
+### **3. Run System**
 
 ```bash
-# Start the complete system
-python start_orchestration.py
+# Start the complete system (recommended)
+python -m orchestration.integrated_system
+
+# OR use the runner script
+python run_orchestration.py
 ```
 
-### 4. Monitor
+### **4. Monitor**
 
 ```bash
 # Check metrics
@@ -234,7 +258,7 @@ curl http://localhost:9090/metrics
 tail -f orchestration.log
 ```
 
-## 🔧 Troubleshooting Checklist
+## 🔧 **Troubleshooting Checklist**
 
 - [ ] Are you in the `vnf-project` root directory?
 - [ ] Does `orchestration/__init__.py` exist?
@@ -242,8 +266,9 @@ tail -f orchestration.log
 - [ ] Are the ports (9090, 8080) available?
 - [ ] Are you using Python 3.8+?
 - [ ] Have you run the test suite first?
+- [ ] Are you using `python -m orchestration.integrated_system`?
 
-## 📞 Getting Help
+## 📞 **Getting Help**
 
 If you still encounter issues:
 
@@ -252,8 +277,9 @@ If you still encounter issues:
 3. **Verify Python version**: `python --version`
 4. **Check dependencies**: `pip list | grep prometheus`
 5. **Review this guide**: Ensure you're following the correct steps
+6. **Use module execution**: `python -m orchestration.integrated_system`
 
-## 🎉 Success Indicators
+## 🎉 **Success Indicators**
 
 When everything is working correctly, you should see:
 
@@ -272,4 +298,20 @@ When everything is working correctly, you should see:
 🌐 SDN Controller at: http://localhost:8080
 ```
 
-The system is now running and ready for VNF orchestration! 🚀
+## 🚀 **Quick Commands Summary**
+
+```bash
+# Navigate to project root
+cd vnf-project
+
+# Test the system
+python test_orchestration.py
+
+# Run the system (recommended)
+python -m orchestration.integrated_system
+
+# OR use runner script
+python run_orchestration.py
+```
+
+The system is now running and ready for VNF orchestration! 🎉

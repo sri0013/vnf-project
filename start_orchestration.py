@@ -2,6 +2,9 @@
 """
 Startup Script for VNF Orchestration System
 Run this from the project root directory to start the complete orchestration system
+
+IMPORTANT: This script demonstrates the correct way to run the orchestration system.
+For production use, use: python -m orchestration.integrated_system
 """
 
 import sys
@@ -35,7 +38,7 @@ async def start_orchestration_system():
     try:
         logger.info("🚀 Starting VNF Orchestration System...")
         
-        # Import orchestration components
+        # Import orchestration components using absolute imports (since we're outside the package)
         from orchestration.vnf_orchestrator import VNFOrchestrator
         from orchestration.sdn_controller import SDNController
         from orchestration.sfc_orchestrator import SFCOrchestrator
@@ -95,7 +98,7 @@ async def start_orchestration_system():
     except ImportError as e:
         logger.error(f"Import error: {e}")
         logger.error("Make sure you're running from the project root directory")
-        logger.error("Try: python start_orchestration.py")
+        logger.error("Try: python -m orchestration.integrated_system")
         return False
     except Exception as e:
         logger.error(f"Failed to start orchestration system: {e}")
