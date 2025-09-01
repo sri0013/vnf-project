@@ -16,9 +16,11 @@ import docker
 import pandas as pd
 import numpy as np
 from statsmodels.tsa.arima.model import ARIMA
-from prometheus_client import start_http_server, Gauge, Counter, Histogram
 import requests
 import yaml
+
+# Import centralized metrics registry
+from .metrics_registry import get_vnf_orchestrator_metrics, start_metrics_server
 
 # Configure logging
 logging.basicConfig(
@@ -62,11 +64,11 @@ class VNFOrchestrator:
             'latency_lower': 200
         })
         
-        # Initialize Prometheus metrics
-        self._init_prometheus_metrics()
+        # Get metrics from centralized registry
+        self.metrics = get_vnf_orchestrator_metrics()
         
-        # Start Prometheus metrics server
-        start_http_server(9090)
+        # Start centralized Prometheus metrics server
+        start_metrics_server(9090)
         
         logger.info("VNF Orchestrator initialized successfully")
     
@@ -94,8 +96,7 @@ class VNFOrchestrator:
                     self.metrics_history[vnf_type][metric] = []
             logger.info("Metrics history initialized")
             
-            # Initialize Prometheus metrics
-            self._init_prometheus_metrics()
+            # Prometheus metrics are managed by centralized registry
             logger.info("Prometheus metrics initialized")
             
             logger.info("VNF Orchestrator initialized successfully")
@@ -140,17 +141,7 @@ class VNFOrchestrator:
             }
         }
     
-    def _init_prometheus_metrics(self):
-        """Initialize Prometheus metrics"""
-        self.metrics = {
-            'vnf_instances': Gauge('vnf_instances_total', 'Total VNF instances', ['vnf_type']),
-            'vnf_cpu_usage': Gauge('vnf_cpu_usage', 'CPU usage per VNF instance', ['vnf_type', 'instance_id']),
-            'vnf_memory_usage': Gauge('vnf_memory_usage', 'Memory usage per VNF instance', ['vnf_type', 'instance_id']),
-            'vnf_processing_latency': Gauge('vnf_processing_latency', 'Processing latency per VNF instance', ['vnf_type', 'instance_id']),
-            'vnf_packets_processed': Counter('vnf_packets_processed', 'Packets processed per VNF instance', ['vnf_type', 'instance_id']),
-            'scaling_actions': Counter('scaling_actions_total', 'Total scaling actions', ['vnf_type', 'action']),
-            'forecast_accuracy': Histogram('forecast_accuracy', 'ARIMA forecast accuracy', ['vnf_type', 'metric'])
-        }
+
     
     def collect_metrics(self, vnf_type: str, instance_id: str) -> Dict:
         """Collect metrics from a VNF instance"""
