@@ -1,7 +1,7 @@
 # Build VNF Images Script
 # This script builds all VNF Docker images for the Service Function Chain
 # Supports comprehensive SFC definitions for bidirectional email security
-
+#!/usr/bin/env pwsh
 Write-Host "🔧 Building VNF Docker Images for Comprehensive SFC..." -ForegroundColor Green
 
 # Check if Docker is running
