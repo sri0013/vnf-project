@@ -31,6 +31,30 @@ class SDNController:
         
         logger.info(f"SDN Controller initialized on port {port}")
     
+    async def initialize(self):
+        """Initialize the SDN Controller asynchronously"""
+        logger.info("SDN Controller initializing...")
+        
+        try:
+            # Initialize flow rules
+            self.flow_rules = {}
+            logger.info("Flow rules initialized")
+            
+            # Initialize VNF instances tracking
+            self.vnf_instances = {}
+            logger.info("VNF instances tracking initialized")
+            
+            # Initialize load balancer
+            self.load_balancer = LoadBalancer()
+            logger.info("Load balancer initialized")
+            
+            logger.info("SDN Controller initialized successfully")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error during initialization: {e}")
+            return False
+    
     def _register_routes(self):
         """Register Flask routes"""
         
@@ -112,6 +136,27 @@ class SDNController:
             
         except Exception as e:
             logger.error(f"Error adding flow rule: {e}")
+            return False
+    
+    async def add_flow_rule(self, flow_rule: Dict) -> bool:
+        """Add a flow rule asynchronously"""
+        try:
+            flow_id = flow_rule.get('flow_id')
+            vnf_type = flow_rule.get('vnf_type')
+            instance_id = flow_rule.get('instance_id')
+            priority = flow_rule.get('priority', 100)
+            
+            return self._add_flow_rule(flow_id, vnf_type, instance_id, priority)
+        except Exception as e:
+            logger.error(f"Error adding flow rule: {e}")
+            return False
+    
+    async def remove_flow_rule(self, flow_id: str) -> bool:
+        """Remove a flow rule asynchronously"""
+        try:
+            return self._remove_flow_rule(flow_id)
+        except Exception as e:
+            logger.error(f"Error removing flow rule: {e}")
             return False
     
     def _remove_flow_rule(self, flow_id: str) -> bool:
@@ -236,6 +281,11 @@ class SDNController:
         
         # Start Flask app
         self.app.run(host='0.0.0.0', port=self.port, debug=False)
+
+    def clear_all_flows(self):
+        """Clear all flow rules"""
+        self.flow_rules.clear()
+        logger.info("All flow rules cleared")
 
 
 class LoadBalancer:

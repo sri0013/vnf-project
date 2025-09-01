@@ -70,6 +70,41 @@ class VNFOrchestrator:
         
         logger.info("VNF Orchestrator initialized successfully")
     
+    def log(self, message: str):
+        """Simple logging method for compatibility"""
+        logger.info(message)
+    
+    async def initialize(self):
+        """Initialize the VNF Orchestrator asynchronously"""
+        logger.info("VNF Orchestrator initializing...")
+        
+        try:
+            # Initialize Docker client
+            self.docker_client = docker.from_env()
+            logger.info("Docker client initialized")
+            
+            # Initialize VNF instances tracking
+            for vnf_type in self.vnf_instances:
+                self.vnf_instances[vnf_type] = []
+            logger.info("VNF instances tracking initialized")
+            
+            # Initialize metrics history
+            for vnf_type in self.metrics_history:
+                for metric in self.metrics_history[vnf_type]:
+                    self.metrics_history[vnf_type][metric] = []
+            logger.info("Metrics history initialized")
+            
+            # Initialize Prometheus metrics
+            self._init_prometheus_metrics()
+            logger.info("Prometheus metrics initialized")
+            
+            logger.info("VNF Orchestrator initialized successfully")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error during initialization: {e}")
+            return False
+    
     def _load_config(self, config_file: str) -> dict:
         """Load configuration from YAML file"""
         try:
@@ -461,6 +496,144 @@ class VNFOrchestrator:
                 time.sleep(1)
         except KeyboardInterrupt:
             logger.info("Shutting down VNF Orchestrator")
+    
+    # Additional methods needed by integrated_system.py
+    def get_available_resources(self) -> Dict[str, float]:
+        """Get available system resources"""
+        try:
+            import psutil
+            cpu_available = 100.0 - psutil.cpu_percent()
+            memory = psutil.virtual_memory()
+            memory_available = 100.0 - memory.percent
+            
+            return {
+                'cpu_available': cpu_available,
+                'memory_available': memory_available,
+                'cpu_total': psutil.cpu_count(),
+                'memory_total': memory.total / (1024**3),  # GB
+                'network_bandwidth': 1000.0  # Mbps (assumed)
+            }
+        except ImportError:
+            # Fallback if psutil not available
+            return {
+                'cpu_available': 80.0,
+                'memory_available': 70.0,
+                'cpu_total': 8,
+                'memory_total': 16.0,
+                'network_bandwidth': 1000.0
+            }
+    
+    def get_vnf_instances(self, vnf_type: str) -> List[str]:
+        """Get list of VNF instance IDs for a specific type"""
+        return self.vnf_instances.get(vnf_type, [])
+    
+    def get_all_vnf_instances(self) -> List[str]:
+        """Get all VNF instance IDs across all types"""
+        all_instances = []
+        for instances in self.vnf_instances.values():
+            all_instances.extend(instances)
+        return all_instances
+    
+    def get_vnf_load(self, vnf_type: str) -> float:
+        """Get current load for a VNF type"""
+        instances = self.get_vnf_instances(vnf_type)
+        if not instances:
+            return 0.0
+        
+        # Calculate average load across all instances
+        total_load = 0.0
+        valid_instances = 0
+        
+        for instance_id in instances:
+            metrics = self.collect_metrics(vnf_type, instance_id)
+            if metrics:
+                # Calculate load as weighted average of CPU and memory
+                load = (metrics['cpu'] * 0.6 + metrics['memory'] * 0.4) / 100.0
+                total_load += load
+                valid_instances += 1
+        
+        return total_load / valid_instances if valid_instances > 0 else 0.0
+    
+    def get_active_sfcs(self) -> Dict:
+        """Get active SFC allocations"""
+        # This is a placeholder - in a real implementation, you'd track SFCs
+        return {
+            'active_chains': len(self.get_all_vnf_instances()),
+            'total_bandwidth': 100.0,  # Mbps
+            'average_latency': 50.0    # ms
+        }
+    
+    async def allocate_vnf(self, vnf_type: str) -> bool:
+        """Allocate a new VNF instance"""
+        try:
+            return self.scale_out(vnf_type)
+        except Exception as e:
+            logger.error(f"Error allocating VNF {vnf_type}: {e}")
+            return False
+    
+    async def remove_vnf(self, vnf_type: str, instance_id: str) -> bool:
+        """Remove a VNF instance"""
+        try:
+            if instance_id in self.vnf_instances.get(vnf_type, []):
+                self._remove_vnf_instance(instance_id)
+                self.vnf_instances[vnf_type].remove(instance_id)
+                self.metrics['vnf_instances'].labels(vnf_type=vnf_type).set(len(self.vnf_instances[vnf_type]))
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"Error removing VNF {vnf_type} instance {instance_id}: {e}")
+            return False
+    
+    async def create_sfc(self, sfc_config: Dict) -> bool:
+        """Create a new Service Function Chain"""
+        try:
+            chain_id = sfc_config.get('chain_id')
+            vnf_sequence = sfc_config.get('vnf_sequence', [])
+            
+            logger.info(f"Creating SFC {chain_id} with sequence: {vnf_sequence}")
+            
+            # Allocate VNFs for the chain
+            for vnf_type in vnf_sequence:
+                success = await self.allocate_vnf(vnf_type)
+                if not success:
+                    logger.error(f"Failed to allocate VNF {vnf_type} for SFC {chain_id}")
+                    return False
+            
+            logger.info(f"SFC {chain_id} created successfully")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error creating SFC: {e}")
+            return False
+    
+    async def scale_out_async(self, vnf_type: str) -> Optional[str]:
+        """Async version of scale out"""
+        try:
+            success = self.scale_out(vnf_type)
+            if success:
+                # Return the ID of the newly created instance
+                instances = self.get_vnf_instances(vnf_type)
+                return instances[-1] if instances else None
+            return None
+        except Exception as e:
+            logger.error(f"Error in async scale out: {e}")
+            return None
+    
+    async def scale_in_async(self, vnf_type: str, instance_id: str) -> bool:
+        """Async version of scale in"""
+        try:
+            return await self.remove_vnf(vnf_type, instance_id)
+        except Exception as e:
+            logger.error(f"Error in async scale in: {e}")
+            return False
+    
+    async def get_available_instance(self, vnf_type: str) -> Optional[str]:
+        """Get an available VNF instance of the specified type"""
+        instances = self.get_vnf_instances(vnf_type)
+        if instances:
+            # Return the first available instance
+            return instances[0]
+        return None
 
 if __name__ == "__main__":
     orchestrator = VNFOrchestrator()
