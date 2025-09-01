@@ -5,7 +5,7 @@ Test script to verify centralized metrics registry prevents Prometheus collision
 
 import time
 import threading
-from metrics_registry import start_metrics_server, get_vnf_orchestrator_metrics
+from orchestration.metrics_registry import start_metrics_server, get_vnf_orchestrator_metrics
 
 def test_metrics_registry():
     """Test that metrics can be created multiple times without collisions"""

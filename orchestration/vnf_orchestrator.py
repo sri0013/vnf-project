@@ -20,7 +20,7 @@ import requests
 import yaml
 
 # Import centralized metrics registry
-from .metrics_registry import get_vnf_orchestrator_metrics, start_metrics_server
+from orchestration.metrics_registry import get_vnf_orchestrator_metrics, start_metrics_server
 
 # Configure logging
 logging.basicConfig(
