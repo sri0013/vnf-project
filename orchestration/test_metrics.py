@@ -5,7 +5,21 @@ Test script to verify centralized metrics registry prevents Prometheus collision
 
 import time
 import threading
-from .metrics_registry import start_metrics_server, get_vnf_orchestrator_metrics
+
+# Import metrics registry - handle both relative and absolute imports
+try:
+    # Try relative import first (when run as module)
+    from .metrics_registry import start_metrics_server, get_vnf_orchestrator_metrics
+except ImportError:
+    try:
+        # Fallback to absolute import (when run standalone)
+        from orchestration.metrics_registry import start_metrics_server, get_vnf_orchestrator_metrics
+    except ImportError:
+        # Final fallback - direct import (for testing)
+        import sys
+        import os
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from metrics_registry import start_metrics_server, get_vnf_orchestrator_metrics
 
 def test_metrics_registry():
     """Test that metrics can be created multiple times without collisions"""

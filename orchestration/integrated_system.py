@@ -1,37 +1,39 @@
 #!/usr/bin/env python3
 """
-Integrated NFV System with DRL Agent and ARIMA Forecasting
-Complete end-to-end Service Function Chain provisioning system
+Integrated VNF Service Function Chain System
+Main entry point for the complete orchestration system
 """
 
+import sys
+import os
 import asyncio
 import logging
-import signal
-import sys
-import time
-from typing import Dict, List, Optional
-from pathlib import Path
-import json
-import threading
-from concurrent.futures import ThreadPoolExecutor
 
-# Import our custom modules
-from drl_agent import DRLAgent, SFCState, SFCAction, ActionType
-from enhanced_arima import EnhancedARIMAForecaster
-from vnf_orchestrator import VNFOrchestrator
-from sdn_controller import SDNController
-from grafana_dashboards import GrafanaDashboardGenerator
+# Add the project root to Python path for imports
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('integrated_system.log'),
-        logging.StreamHandler(sys.stdout)
-    ]
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# Import orchestration components with proper error handling
+try:
+    from orchestration.vnf_orchestrator import VNFOrchestrator
+    from orchestration.sdn_controller import SDNController
+    from orchestration.sfc_orchestrator import SFCOrchestrator
+    from orchestration.drl_agent import DRLAgent
+    from orchestration.enhanced_arima import EnhancedARIMAForecaster
+    logger.info("✅ All orchestration components imported successfully")
+except ImportError as e:
+    logger.error(f"❌ Import error: {e}")
+    logger.error("Make sure you're running from the project root directory")
+    logger.error("Try: python -m orchestration.integrated_system")
+    sys.exit(1)
 
 class IntegratedNFVSystem:
     """Complete integrated NFV system with DRL and forecasting"""

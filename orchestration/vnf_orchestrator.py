@@ -19,8 +19,20 @@ from statsmodels.tsa.arima.model import ARIMA
 import requests
 import yaml
 
-# Import centralized metrics registry
-from .metrics_registry import get_vnf_orchestrator_metrics, start_metrics_server
+# Import centralized metrics registry - handle both relative and absolute imports
+try:
+    # Try relative import first (when run as module)
+    from .metrics_registry import get_vnf_orchestrator_metrics, start_metrics_server
+except ImportError:
+    try:
+        # Fallback to absolute import (when run standalone)
+        from orchestration.metrics_registry import get_vnf_orchestrator_metrics, start_metrics_server
+    except ImportError:
+        # Final fallback - direct import (for testing)
+        import sys
+        import os
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from metrics_registry import get_vnf_orchestrator_metrics, start_metrics_server
 
 # Configure logging
 logging.basicConfig(
