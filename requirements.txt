@@ -1,0 +1,86 @@
+# VNF Service Function Chain Project Requirements
+# Comprehensive Email Security Implementation with DRL+ARIMA Orchestration
+# =================================================================
+
+# Core Python Dependencies
+python-version>=3.8,<4.0
+
+# VNF Core Dependencies
+prometheus-client>=0.17.0
+psutil>=5.9.0
+flask>=2.3.0
+requests>=2.31.0
+
+# Deep Reinforcement Learning Dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+numpy>=1.24.0
+gym>=0.26.0
+
+# ARIMA Forecasting Dependencies
+statsmodels>=0.14.0
+pandas>=2.0.0
+scipy>=1.10.0
+matplotlib>=3.7.0
+
+# Docker and Containerization
+docker>=6.1.0
+docker-compose>=1.29.0
+
+# Network and SDN Dependencies
+mininet>=2.3.0
+ryu>=4.34.0
+ovs>=2.17.0
+
+# Monitoring and Metrics
+grafana-api>=1.0.3
+prometheus-api-client>=0.5.0
+
+# Configuration and YAML
+pyyaml>=6.0
+configparser>=5.3.0
+
+# Async and Concurrency
+asyncio>=3.4.3
+aiohttp>=3.8.0
+aiofiles>=23.0.0
+
+# Database and Storage
+sqlalchemy>=2.0.0
+redis>=4.5.0
+
+# Testing and Development
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+black>=23.0.0
+flake8>=6.0.0
+
+# Logging and Utilities
+structlog>=23.1.0
+python-json-logger>=2.0.0
+
+# Security and Cryptography
+cryptography>=41.0.0
+pycryptodome>=3.18.0
+
+# Machine Learning Utilities
+scikit-learn>=1.3.0
+tensorboard>=2.13.0
+
+# Network Utilities
+netaddr>=0.8.0
+scapy>=2.5.0
+
+# Performance and Profiling
+memory-profiler>=0.61.0
+line-profiler>=4.1.0
+
+# Documentation
+sphinx>=7.0.0
+sphinx-rtd-theme>=1.3.0
+
+# Development Tools
+pre-commit>=3.3.0
+mypy>=1.5.0
+isort>=5.12.0
