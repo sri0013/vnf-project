@@ -1,48 +1,46 @@
-# VNF Orchestration System - Troubleshooting Guide
+# VNF Performance Testing System - Troubleshooting Guide
 
 ## 🚨 **Common Issues and Solutions**
 
-### **Issue 1: ImportError: attempted relative import with no known parent package**
+### **Issue 1: Docker Not Running**
 
-**Symptoms**: Error when running files directly from orchestration directory
+**Symptoms**: Error when building VNF images or starting orchestration
 
-**Root Cause**: Running Python files as scripts instead of modules
+**Root Cause**: Docker Desktop is not started
 
 **Solutions**:
 ```bash
-# ❌ Wrong - runs as script
-python orchestration/vnf_orchestrator.py
+# Start Docker Desktop (Windows/Mac)
+# Or: sudo systemctl start docker (Linux)
 
-# ✅ Correct - use universal launcher (works from anywhere)
-python launch_orchestration.py
+# Check Docker status
+docker ps
 
-# ✅ Correct - run as module from project root
-cd vnf-project
-python -m orchestration.integrated_system
+# Build VNF images
+python VNF_PERFORMANCE_TESTS.py build
 ```
 
-### **Issue 2: ModuleNotFoundError: No module named 'orchestration'**
+### **Issue 2: Import Errors**
 
-**Symptoms**: Python can't find the orchestration package
+**Symptoms**: Python can't import orchestration components
 
-**Root Cause**: Not in the correct directory or missing __init__.py
+**Root Cause**: Missing dependencies or wrong Python version
 
 **Solutions**:
 ```bash
-# 1. Use universal launcher (recommended)
-python launch_orchestration.py
+# Install dependencies
+pip install -r requirements.txt
 
-# 2. Navigate to project root manually
-cd /path/to/vnf-project
-python -m orchestration.integrated_system
+# Check Python version (3.8+ required)
+python --version
 
-# 3. Check if __init__.py exists
-ls -la orchestration/__init__.py
+# Run performance tests
+python VNF_PERFORMANCE_TESTS.py testall
 ```
 
 ### **Issue 3: Port Already in Use**
 
-**Symptoms**: Error starting Prometheus server or SDN controller
+**Symptoms**: Error starting monitoring services
 
 **Root Cause**: Another instance is running or port is occupied
 
@@ -51,32 +49,33 @@ ls -la orchestration/__init__.py
 # Check what's using the ports
 netstat -tulpn | grep :9090
 netstat -tulpn | grep :8080
+netstat -tulpn | grep :3000
+netstat -tulpn | grep :9091
 
 # Kill processes using the ports
 sudo kill -9 <PID>
 
-# Or use different ports in configuration
+# Or restart Docker services
+docker compose down
+docker compose up -d
 ```
 
-### **Issue 4: Python Version Issues**
+### **Issue 4: Test Failures**
 
-**Symptoms**: Syntax errors or import failures
+**Symptoms**: Performance tests fail or return errors
 
-**Root Cause**: Using Python version below 3.8
+**Root Cause**: VNF images not built or orchestration not started
 
 **Solutions**:
 ```bash
-# Check Python version
-python --version
+# Build VNF images first
+python VNF_PERFORMANCE_TESTS.py build
 
-# Install Python 3.8+ if needed
-# Ubuntu/Debian:
-sudo apt update && sudo apt install python3.8
+# Start orchestration system
+python VNF_PERFORMANCE_TESTS.py orchestrate
 
-# macOS:
-brew install python@3.8
-
-# Windows: Download from python.org
+# Run tests
+python VNF_PERFORMANCE_TESTS.py testall
 ```
 
 ### **Issue 5: Missing Dependencies**
@@ -91,7 +90,7 @@ brew install python@3.8
 pip install -r requirements.txt
 
 # Install specific packages
-pip install prometheus-client docker pandas numpy statsmodels
+pip install prometheus-client docker pandas numpy statsmodels flask psutil
 
 # Check installed packages
 pip list
@@ -102,169 +101,199 @@ pip list
 ### **Step 1: Quick Diagnosis**
 
 ```bash
-# Test from anywhere
-python test_anywhere.py
-
 # Check Python version
 python --version
+
+# Check Docker status
+docker ps
 
 # Check current directory
 pwd
 ls -la
 ```
 
-### **Step 2: Verify Project Structure**
+### **Step 2: Build VNF Images**
 
 ```bash
-# Should show vnf-project directory structure
-ls -la
+# Build all VNF images
+python VNF_PERFORMANCE_TESTS.py build
 
-# Should show orchestration package
-ls -la orchestration/
-
-# Should show __init__.py
-ls -la orchestration/__init__.py
+# Check if images were created
+docker images | grep my-
 ```
 
-### **Step 3: Test Imports**
+### **Step 3: Start Orchestration**
 
 ```bash
-# Test basic import
-python -c "import orchestration; print('✅ Package found')"
+# Start orchestration system
+python VNF_PERFORMANCE_TESTS.py orchestrate
 
-# Test specific component
-python -c "from orchestration.vnf_orchestrator import VNFOrchestrator; print('✅ Component imported')"
+# Check if services are running
+docker compose ps
 ```
 
-### **Step 4: Run System**
+### **Step 4: Run Performance Tests**
 
 ```bash
-# Use universal launcher (recommended)
-python launch_orchestration.py
+# Run all tests
+python VNF_PERFORMANCE_TESTS.py testall
 
-# Or run as module
-python -m orchestration.integrated_system
+# Or run individual tests
+python VNF_PERFORMANCE_TESTS.py test1
+python VNF_PERFORMANCE_TESTS.py test2
+python VNF_PERFORMANCE_TESTS.py test3
 ```
 
 ## 🧪 **Testing Commands**
 
-### **Test from Anywhere**
+### **Build VNF Images**
 ```bash
-# Works from any directory
-python test_anywhere.py
+# Build all VNF images
+python VNF_PERFORMANCE_TESTS.py build
 ```
 
-### **Test from Project Root**
+### **Start Orchestration**
 ```bash
-# Navigate to project root
-cd vnf-project
-
-# Run test suite
-python test_orchestration.py
-
-# Test individual components
-python -c "from orchestration.vnf_orchestrator import VNFOrchestrator; print('OK')"
+# Start orchestration system
+python VNF_PERFORMANCE_TESTS.py orchestrate
 ```
 
-### **Test Metrics Registry**
+### **Run Performance Tests**
 ```bash
-# Test metrics creation
-python -c "
-from orchestration.metrics_registry import start_metrics_server, get_vnf_orchestrator_metrics
-print('✅ Metrics registry works')
-"
+# Run all tests
+python VNF_PERFORMANCE_TESTS.py testall
+
+# Run individual test cases
+python VNF_PERFORMANCE_TESTS.py test1    # End-to-end latency
+python VNF_PERFORMANCE_TESTS.py test2    # Tail latency percentiles
+python VNF_PERFORMANCE_TESTS.py test3    # Throughput at latency SLA
+```
+
+### **Check System Status**
+```bash
+# Check Docker containers
+docker compose ps
+
+# Check VNF images
+docker images | grep my-
+
+# Check system health
+curl http://localhost:8080/health
 ```
 
 ## 🚀 **Universal Solutions**
 
-### **Solution 1: Universal Launcher (Always Works)**
+### **Solution 1: Complete System Setup**
 
 ```bash
-# This works from ANY directory
-python launch_orchestration.py
+# Build VNF images
+python VNF_PERFORMANCE_TESTS.py build
+
+# Start orchestration
+python VNF_PERFORMANCE_TESTS.py orchestrate
+
+# Run all tests
+python VNF_PERFORMANCE_TESTS.py testall
 ```
 
 **What it does**:
-- ✅ Automatically finds the project root
-- ✅ Creates missing __init__.py files
-- ✅ Tests all imports
-- ✅ Launches the system correctly
+- ✅ Builds all 30+ VNF Docker images
+- ✅ Starts integrated orchestration system
+- ✅ Runs all 3 critical test cases
+- ✅ Provides comprehensive results
 
-### **Solution 2: Manual Module Execution**
+### **Solution 2: Individual Test Cases**
 
 ```bash
-# Navigate to project root
-cd /path/to/vnf-project
+# Test Case 1: End-to-end latency
+python VNF_PERFORMANCE_TESTS.py test1
 
-# Run as module
-python -m orchestration.integrated_system
+# Test Case 2: Tail latency percentiles
+python VNF_PERFORMANCE_TESTS.py test2
+
+# Test Case 3: Throughput at latency SLA
+python VNF_PERFORMANCE_TESTS.py test3
 ```
 
-### **Solution 3: Use Platform-Specific Scripts**
+### **Solution 3: Live Monitoring**
 
-**Windows**:
-```cmd
-launch_orchestration.bat
-```
-
-**Linux/macOS**:
 ```bash
-./launch_orchestration.sh
+# Access live dashboards
+# Grafana: http://localhost:3000 (admin/admin)
+# Prometheus: http://localhost:9090
+# SDN Controller: http://localhost:8080
+# VNF Orchestrator: http://localhost:9091
 ```
 
 ## 🔍 **Debugging Commands**
 
-### **Check Python Path**
-```python
-import sys
-print("Python path:")
-for path in sys.path:
-    print(f"  {path}")
-```
-
-### **Check Current Directory**
-```python
-import os
-print(f"Current working directory: {os.getcwd()}")
-print(f"Script location: {os.path.dirname(os.path.abspath(__file__))}")
-```
-
-### **Check Package Recognition**
+### **Check System Status**
 ```bash
-# Should work from project root
-python -c "import orchestration; print('Package imported successfully')"
+# Check Docker containers
+docker compose ps
+
+# Check VNF images
+docker images | grep my-
+
+# Check system health
+curl http://localhost:8080/health
+curl http://localhost:9090/api/v1/targets
+```
+
+### **Check Test Results**
+```bash
+# Run individual test cases
+python VNF_PERFORMANCE_TESTS.py test1
+python VNF_PERFORMANCE_TESTS.py test2
+python VNF_PERFORMANCE_TESTS.py test3
+
+# Check test output for errors
+```
+
+### **Check Dependencies**
+```bash
+# Check Python version
+python --version
+
+# Check installed packages
+pip list | grep -E "(prometheus|docker|numpy|pandas|flask|psutil)"
+
+# Install missing dependencies
+pip install -r requirements.txt
 ```
 
 ## 📋 **Troubleshooting Checklist**
 
-- [ ] Are you using Python 3.8+?
+- [ ] Is Docker Desktop running?
 - [ ] Are all dependencies installed (`pip install -r requirements.txt`)?
-- [ ] Does `orchestration/__init__.py` exist?
-- [ ] Are you in the correct directory?
-- [ ] Have you tried the universal launcher?
-- [ ] Are the required ports (9090, 8080) available?
-- [ ] Have you run the test suite first?
+- [ ] Are you using Python 3.8+?
+- [ ] Have you built VNF images first (`python VNF_PERFORMANCE_TESTS.py build`)?
+- [ ] Have you started orchestration (`python VNF_PERFORMANCE_TESTS.py orchestrate`)?
+- [ ] Are the required ports (3000, 8080, 9090, 9091) available?
+- [ ] Are you running tests from the project root directory?
 
 ## 🆘 **Getting Help**
 
 If you still encounter issues:
 
-1. **Run the universal test**: `python test_anywhere.py`
-2. **Check the error messages**: Look for specific error details
-3. **Verify your environment**: Python version, dependencies, ports
-4. **Use the universal launcher**: `python launch_orchestration.py`
-5. **Check this guide**: Ensure you've tried all solutions
+1. **Build VNF images**: `python VNF_PERFORMANCE_TESTS.py build`
+2. **Start orchestration**: `python VNF_PERFORMANCE_TESTS.py orchestrate`
+3. **Run tests**: `python VNF_PERFORMANCE_TESTS.py testall`
+4. **Check Docker status**: `docker ps`
+5. **Verify Python version**: `python --version`
+6. **Check dependencies**: `pip list | grep prometheus`
+7. **Review this guide**: Ensure you've tried all solutions
 
 ## 🎯 **Quick Fix Summary**
 
 | **Problem** | **Quick Fix** |
 |-------------|---------------|
-| Import errors | `python launch_orchestration.py` |
-| Port conflicts | Kill processes or use different ports |
-| Python version | Install Python 3.8+ |
+| Docker not running | Start Docker Desktop |
+| Import errors | `pip install -r requirements.txt` |
+| Port conflicts | Kill processes or restart Docker |
+| Test failures | Build images and start orchestration first |
 | Missing deps | `pip install -r requirements.txt` |
-| Wrong directory | Use universal launcher |
 
 ---
 
-**Remember**: The universal launcher (`python launch_orchestration.py`) solves most issues automatically! 🚀
+**Remember**: Always build VNF images first, then start orchestration, then run tests! 🚀

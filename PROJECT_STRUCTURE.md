@@ -1,126 +1,124 @@
-# NFV Project Structure - Cleaned & Optimized
+# VNF Project Structure - Performance Testing System
 
-## 📁 Final Project Organization
+## 📁 Current Project Organization
 
 ```
 vnf-project/
+├── VNF_PERFORMANCE_TESTS.py      # Complete testing system (3 test cases)
+├── PROJECT_STATUS_AND_PROCEDURE.md # Project status and procedures
+├── LIVE_MONITORING_GUIDE.md      # Live monitoring guide
 ├── README.md                      # Main project documentation
-├── SFC_DEFINITIONS_AND_VALIDATION.md  # Comprehensive SFC documentation
-├── build_vnf_images.ps1          # Single command VNF build script
+├── requirements.txt               # Python dependencies
 ├── orchestration/                 # Core orchestration system
-│   ├── integrated_system.py      # Main system integration
-│   ├── sfc_orchestrator.py       # SFC orchestration logic
-│   ├── drl_agent.py              # Deep Reinforcement Learning agent
-│   ├── enhanced_arima.py         # ARIMA forecasting system
-│   ├── performance_validation.py # Performance testing framework
-│   ├── grafana_dashboards.py     # Dashboard generation
+│   ├── integrated_system.py      # Main orchestration engine
 │   ├── vnf_orchestrator.py       # VNF lifecycle management
-│   ├── sdn_controller.py         # SDN controller integration
-│   ├── orchestration_config.yml  # System configuration
-│   ├── requirements.txt          # Python dependencies
+│   ├── sdn_controller.py         # SDN controller
+│   ├── sfc_orchestrator.py       # SFC management
+│   ├── drl_agent.py              # Deep RL agent
+│   ├── enhanced_arima.py         # ARIMA forecasting
+│   ├── grafana_dashboards.py     # Monitoring dashboards
+│   ├── metrics_registry.py       # Centralized metrics
 │   ├── docker-compose.yml        # Container orchestration
+│   ├── orchestration_config.yml  # System configuration
 │   ├── prometheus_config.yml     # Prometheus configuration
-│   ├── vnf_rules.yml            # VNF scaling rules
-│   └── README.md                 # Orchestration documentation
-├── scripts/                       # Network topology
-│   └── sfc_topology.py           # Mininet SFC topology
-├── firewall/                      # VNF implementations
+│   └── vnf_rules.yml            # VNF scaling rules
+├── firewall/                      # Core VNFs
 ├── antivirus/
 ├── spamfilter/
-├── encryption_gateway/
 ├── content_filtering/
+├── encryption_gateway/
 └── mail/
 ```
 
 ## 🧹 Cleanup Summary
 
 ### Removed Files
-- `DRL_IMPLEMENTATION_PLAN.md` → Consolidated into main documentation
-- `ORCHESTRATION_IMPLEMENTATION.md` → Merged into orchestration README
-- `PROJECT_SUMMARY.txt` → Redundant with main README
-- `COMPLETE_SYSTEM_README.md` → Consolidated into main README
-- `FINAL_IMPLEMENTATION_STATUS.md` → Status now in main README
-- `VNF_CORE_CODE.txt` → Code is in actual VNF directories
-- `IMPLEMENTATION_STATUS.md` → Status now in main README
-- `MAIL_SERVER_IMPLEMENTATION.md` → Details in VNF directories
-- `COMPLETE_VNF_PROJECT_CODE.txt` → Code is in actual files
-- `VNF_PROJECT_CODE_SUMMARY.txt` → Redundant documentation
-- `verify_implementation.py` → Testing now in performance_validation.py
-- `test_mail_server.py` → Testing integrated into main system
-- `gen.ps1` → Unnecessary diagram generation script
-- `gen.sh` → Unnecessary diagram generation script
-- `Oracle VirtualBox.lnk` → Unnecessary shortcut
-- `scripts/sfc_topology_simple.py` → Redundant topology script
-- `scripts/vnf_test.py` → Testing integrated into main system
+- `test_anywhere.py` → Replaced by VNF_PERFORMANCE_TESTS.py
+- `test_orchestration.py` → Replaced by VNF_PERFORMANCE_TESTS.py
+- `test_simple.py` → Replaced by VNF_PERFORMANCE_TESTS.py
+- `test_cases.py` → Integrated into VNF_PERFORMANCE_TESTS.py
+- `run_test_case_1.py` → Integrated into VNF_PERFORMANCE_TESTS.py
+- `run_test_case_2.py` → Integrated into VNF_PERFORMANCE_TESTS.py
+- `run_test_case_3.py` → Integrated into VNF_PERFORMANCE_TESTS.py
+- `run_all_tests.py` → Integrated into VNF_PERFORMANCE_TESTS.py
+- `build_all_images.py` → Integrated into VNF_PERFORMANCE_TESTS.py
+- `start_orchestration.py` → Integrated into VNF_PERFORMANCE_TESTS.py
+- `build_and_test.bat` → Replaced by VNF_PERFORMANCE_TESTS.py
+- `build_and_test.sh` → Replaced by VNF_PERFORMANCE_TESTS.py
+- `TESTING_GUIDE.md` → Replaced by LIVE_MONITORING_GUIDE.md
+- `TESTING_SUMMARY.md` → Replaced by PROJECT_STATUS_AND_PROCEDURE.md
 
 ### Optimized Documentation
-- **Main README.md**: Concise, focused on essential information
-- **Orchestration README.md**: Streamlined, technical focus
-- **SFC_DEFINITIONS_AND_VALIDATION.md**: Comprehensive SFC documentation
+- **VNF_PERFORMANCE_TESTS.py**: Complete testing system with 3 test cases
+- **PROJECT_STATUS_AND_PROCEDURE.md**: Project status and procedures
+- **LIVE_MONITORING_GUIDE.md**: Live monitoring and dashboard guide
+- **README.md**: Updated with current testing system
 
-## 🎯 Key Features Retained
+## 🎯 Key Features - Performance Testing System
 
 ### Core Functionality
-- ✅ **30 VNF Types**: All comprehensive email security VNFs
-- ✅ **Single Command Build**: `./build_vnf_images.ps1`
+- ✅ **3 Critical Test Cases**: End-to-end latency, tail latency percentiles, throughput at SLA
+- ✅ **One Command Each**: Build images, start orchestration, run tests
+- ✅ **30+ VNF Types**: All comprehensive email security VNFs
 - ✅ **DRL Agent**: Deep Q-Network with Attention Mechanism
 - ✅ **ARIMA Forecasting**: Seasonal ARIMA with confidence intervals
 - ✅ **SFC Orchestration**: Bidirectional email security chains
-- ✅ **Performance Validation**: 10,000 request testing framework
-- ✅ **Monitoring**: 5 Grafana dashboards with Prometheus
+- ✅ **Live Monitoring**: Real-time dashboards and metrics
 
-### Performance Achievements
-- ✅ **97% SFC Acceptance Ratio** (vs 72% baseline)
-- ✅ **45% CPU Cycles Reduction**
-- ✅ **38% Latency Improvement**
-- ✅ **92% ARIMA Forecast Accuracy**
+### Performance Test Cases
+- ✅ **Test Case 1**: End-to-end latency (processing + transmission + propagation + queuing)
+- ✅ **Test Case 2**: Tail latency percentiles (P95, P99, P99.9) for elastic VNFs
+- ✅ **Test Case 3**: Throughput at latency SLA (capacity under quality constraints)
 
-### Research Value
-- ✅ **Complete NFV Testbed**: Research-grade platform
-- ✅ **Empirical Validation**: Large-scale performance testing
-- ✅ **Intelligent Orchestration**: DRL+ARIMA hybrid decisions
-- ✅ **Bidirectional SFC**: Complete email security flow
+### Standards Compliance
+- ✅ **RFC 8172**: NFV benchmarking requirements
+- ✅ **ETSI NFV-TST 009**: Throughput/capacity benchmarks
+- ✅ **SFC Literature**: Delay guarantees and performance
 
 ## 🚀 Quick Start Commands
 
 ```bash
-# 1. Build all VNFs
-./build_vnf_images.ps1
+# 1. Build all VNF images
+python VNF_PERFORMANCE_TESTS.py build
 
 # 2. Start orchestration system
-cd orchestration
-python integrated_system.py
+python VNF_PERFORMANCE_TESTS.py orchestrate
 
-# 3. Run performance validation
-python performance_validation.py
+# 3. Run performance tests
+python VNF_PERFORMANCE_TESTS.py test1    # End-to-end latency
+python VNF_PERFORMANCE_TESTS.py test2    # Tail latency percentiles
+python VNF_PERFORMANCE_TESTS.py test3    # Throughput at latency SLA
+python VNF_PERFORMANCE_TESTS.py testall  # All tests
 
-# 4. Access monitoring
-# Grafana: http://localhost:3000
+# 4. Access live monitoring
+# Grafana: http://localhost:3000 (admin/admin)
 # Prometheus: http://localhost:9090
+# SDN Controller: http://localhost:8080
+# VNF Orchestrator: http://localhost:9091
 ```
 
 ## 📊 Documentation Structure
 
 ### Essential Files
-1. **README.md**: Main project overview and quick start
-2. **SFC_DEFINITIONS_AND_VALIDATION.md**: Detailed SFC documentation
-3. **orchestration/README.md**: Technical orchestration details
-4. **build_vnf_images.ps1**: VNF build instructions
+1. **VNF_PERFORMANCE_TESTS.py**: Complete testing system with 3 test cases
+2. **PROJECT_STATUS_AND_PROCEDURE.md**: Project status and procedures
+3. **LIVE_MONITORING_GUIDE.md**: Live monitoring and dashboard guide
+4. **README.md**: Main project overview and quick start
 
 ### Core Code
 1. **orchestration/**: Complete orchestration system
 2. **VNF directories/**: Individual VNF implementations
-3. **scripts/**: Network topology configuration
+3. **VNF_PERFORMANCE_TESTS.py**: All testing functionality
 
 ## ✅ Project Status
 
-**Status**: Complete and Production-Ready  
-**Performance**: All targets achieved  
+**Status**: Complete Performance Testing System  
+**Test Cases**: 3 Critical NFV benchmarking tests  
 **Documentation**: Clean, focused, comprehensive  
 **Code**: Optimized, tested, validated  
 
 The project is now streamlined with:
-- **Essential files only**
-- **Focused documentation**
-- **Proven performance**
-- **Research-grade quality**
+- **3 critical test cases** as requested
+- **One command each** for all operations
+- **Live monitoring** capabilities
+- **Standards compliant** testing

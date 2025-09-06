@@ -1,12 +1,9 @@
 # VNF Orchestration Configuration
 vnf_types:
-  # Core VNFs (existing)
   - firewall
-  - antivirus
   - spamfilter
-  - encryption
   - contentfilter
-  - mail
+  - encryption
   
   # Inbound User Protection VNFs
   - smtp_firewall
@@ -48,67 +45,53 @@ sfc_request_types:
   # Sender → Server (Inbound)
   inbound_user_protection:
     chain:
-      - smtp_firewall
-      - anti_spam_phishing
-      - anti_virus_sandbox
-      - url_rewrite_clicktime
-      - content_filter
-      - delivery_agent
-    description: "Protect users from malicious inbound emails"
+      - firewall
+      - spamfilter
+      - contentfilter
+      - encryption
+    description: "Inbound text-only protection chain"
     direction: "inbound"
     
   outbound_data_protection_compliance:
     chain:
-      - policy_classifier
-      - dlp
-      - encryption_signing
-      - disclaimer_brand
-      - archiver_journal
-      - smart_host
-    description: "Ensure outbound emails meet compliance requirements"
+      - firewall
+      - contentfilter
+      - encryption
+    description: "Outbound text-only DLP + encryption"
     direction: "outbound"
     
   auth_and_anti_spoof_enforcement:
     chain:
-      - spf_dkim_dmarc_validator
-      - anti_spoof_bec
-      - policy_engine
-      - delivery_quarantine
-    description: "Validate sender authentication and prevent spoofing"
+      - firewall
+      - spamfilter
+      - encryption
+    description: "Auth checks folded into spamfilter; TLS enforced"
     direction: "bidirectional"
     
   attachment_risk_reduction:
     chain:
-      - reputation_graylist
-      - multi_engine_av
-      - sandbox_detonation
-      - file_type_control
-      - content_disarm_reconstruct
-      - delivery_quarantine
-    description: "Reduce risks from malicious attachments"
+      - firewall
+      - spamfilter
+      - contentfilter
+    description: "No attachment handling in text-only scope"
     direction: "bidirectional"
     
   branch_cloud_saas_access:
     chain:
-      - dns_url_filter
-      - attachment_sandbox_edge
-      - split_tunnel_steering
-      - sdwan_forwarder
-      - tls_enforcement_saas
-    description: "Secure access to cloud SaaS applications"
+      - firewall
+      - encryption
+    description: "Simplified for single-host Mininet"
     direction: "bidirectional"
 
 # Server → Receiver (Complementary chains)
 sfc_complementary_chains:
   inbound_user_protection_response:
     chain:
-      - delivery_agent
-      - content_filter
-      - url_rewrite_clicktime
-      - anti_virus_sandbox
-      - anti_spam_phishing
-      - smtp_firewall
-    description: "Response chain for inbound user protection"
+      - encryption_tls
+      - contentfilter
+      - spamfilter
+      - firewall
+    description: "Simplified response chain"
     direction: "outbound"
     
   outbound_data_protection_response:

@@ -1,113 +1,124 @@
 # VNF Service Function Chain Orchestration System
 
-## 🚀 **Quick Start (Works from Anywhere!)**
+## 🚀 **Quick Start - 3 Critical Test Cases**
 
-### **Option 1: Universal Launcher (Recommended)**
-
+### **1. Build All VNF Images (One Command)**
 ```bash
-# Run this from ANY directory - it will find the project automatically
-python launch_orchestration.py
+python VNF_PERFORMANCE_TESTS.py build
 ```
 
-### **Option 2: Test First, Then Run**
-
+### **2. Start Orchestration System (One Command)**
 ```bash
-# Test the system from anywhere
-python test_anywhere.py
-
-# Then run the system
-python launch_orchestration.py
+python VNF_PERFORMANCE_TESTS.py orchestrate
 ```
 
-### **Option 3: Traditional Module Execution**
-
+### **3. Run Performance Tests (One Command Each)**
 ```bash
-# Navigate to project root
-cd vnf-project
-
-# Run as Python module
-python -m orchestration.integrated_system
+python VNF_PERFORMANCE_TESTS.py test1    # End-to-end latency
+python VNF_PERFORMANCE_TESTS.py test2    # Tail latency percentiles
+python VNF_PERFORMANCE_TESTS.py test3    # Throughput at latency SLA
+python VNF_PERFORMANCE_TESTS.py testall  # All tests
 ```
 
-## 🔧 **What This System Does**
+## 🔧 **What This System Does (Simple)**
 
-This is a **Virtual Network Function (VNF) Service Function Chain (SFC) Orchestration System** that provides:
+This project chains security functions for email traffic on one machine. It sends each message through:
 
-- **Intelligent VNF Scaling** using Deep Reinforcement Learning (DRL)
-- **Predictive Scaling** with ARIMA time series forecasting
-- **Service Function Chaining** for email security workflows
-- **Centralized Metrics** with Prometheus monitoring
-- **SDN Controller** for network flow management
+- Firewall → Spam filter → Content filter/DLP → Encryption with TLS checks
+
+The SDN controller steers packets between VNFs; DRL + ARIMA decide when to reuse or scale VNFs to keep latency low.
 
 ## 📁 **Project Structure**
 
 ```
 vnf-project/
-├── orchestration/                 # Main orchestration package
-│   ├── __init__.py               # Package initialization
-│   ├── vnf_orchestrator.py      # VNF orchestration logic
+├── VNF_PERFORMANCE_TESTS.py      # Complete testing system (3 test cases)
+├── PROJECT_STATUS_AND_PROCEDURE.md # Project status and procedures
+├── LIVE_MONITORING_GUIDE.md      # Live monitoring guide
+├── orchestration/                # Main orchestration package
+│   ├── integrated_system.py     # Main orchestration engine
+│   ├── vnf_orchestrator.py      # VNF lifecycle management
 │   ├── sdn_controller.py        # SDN controller
 │   ├── sfc_orchestrator.py      # SFC management
 │   ├── drl_agent.py             # Deep RL agent
 │   ├── enhanced_arima.py        # ARIMA forecasting
+│   ├── grafana_dashboards.py    # Monitoring dashboards
 │   ├── metrics_registry.py      # Centralized metrics
-│   └── integrated_system.py     # Main system entry point
-├── antivirus/                    # Antivirus VNF
-├── firewall/                     # Firewall VNF
-├── spamfilter/                   # Spam filter VNF
-├── content_filtering/            # Content filtering VNF
-├── encryption_gateway/           # Encryption VNF
-├── launch_orchestration.py       # Universal launcher (NEW!)
-├── test_anywhere.py              # Universal test script (NEW!)
-├── run_orchestration.py          # Runner script
-├── test_orchestration.py         # Test suite
-└── requirements.txt              # Dependencies
+│   ├── docker-compose.yml       # Container orchestration
+│   └── orchestration_config.yml # System configuration
+├── firewall/                     # Core VNFs
+├── antivirus/
+├── spamfilter/
+├── content_filtering/
+├── encryption_gateway/
+├── mail/
+├── requirements.txt              # Dependencies
+└── README.md                     # This file
 ```
 
 ## 🎯 **Key Features**
 
+- ✅ **3 Critical Test Cases**: End-to-end latency, tail latency percentiles, throughput at SLA
+- ✅ **One Command Each**: Build images, start orchestration, run tests
 - ✅ **DRL + ARIMA Orchestration**: Intelligent scaling decisions
-- ✅ **Prometheus Metrics**: Comprehensive monitoring and alerting
+- ✅ **Live Monitoring**: Real-time dashboards and metrics
 - ✅ **Docker Integration**: Containerized VNF deployment
 - ✅ **SDN Control**: Software-defined networking management
 - ✅ **Service Function Chaining**: Email security workflows
 - ✅ **Auto-scaling**: Predictive resource management
-- ✅ **Universal Launcher**: Works from any directory
 
-## 🧪 **Testing**
+## 🧪 **Testing - 3 Critical Test Cases**
 
-### **Test from Anywhere**
+### **Test Case 1: End-to-end Latency**
 ```bash
-# This works from any directory
-python test_anywhere.py
+python VNF_PERFORMANCE_TESTS.py test1
 ```
+- Measures processing + transmission + propagation + queuing delays
+- Aligns with SFC literature on delay guarantees
+- User-visible performance measurement
 
-### **Test from Project Root**
+### **Test Case 2: Tail Latency Percentiles**
 ```bash
-# Traditional testing
-cd vnf-project
-python test_orchestration.py
+python VNF_PERFORMANCE_TESTS.py test2
+```
+- Measures long-tail behavior for elastic VNFs
+- Transient scaling effects analysis
+- RFC 8172 compliant percentiles (P95, P99, P99.9)
+
+### **Test Case 3: Throughput at Latency SLA**
+```bash
+python VNF_PERFORMANCE_TESTS.py test3
+```
+- Capacity under quality constraints
+- ETSI NFV-TST 009 guidance compliance
+- Throughput/capacity benchmarks tied to loss and delay goals
+
+### **Run All Tests**
+```bash
+python VNF_PERFORMANCE_TESTS.py testall
 ```
 
 ## 🚨 **Important Notes**
 
-### **Universal Launcher (NEW!)**
-- ✅ **Works from anywhere**: No need to navigate to project root
-- ✅ **Auto-detects project**: Finds vnf-project automatically
-- ✅ **Handles all setup**: Creates missing files, tests imports
-- ✅ **Simple command**: Just run `python launch_orchestration.py`
+### **Performance Testing System**
+- ✅ **3 Critical Test Cases**: Exactly as requested for NFV benchmarking
+- ✅ **One Command Each**: Build images, start orchestration, run tests
+- ✅ **Standards Compliant**: RFC 8172, ETSI NFV-TST 009
+- ✅ **Live Monitoring**: Real-time dashboards and metrics
 
-### **Traditional Approach**
-- ✅ **Use module execution**: `python -m orchestration.integrated_system`
-- ✅ **Run from project root**: `cd vnf-project`
-- ❌ **Don't run files directly**: `python orchestration/vnf_orchestrator.py`
+### **System Requirements**
+- ✅ **Python 3.8+**: Required for all components
+- ✅ **Docker Desktop**: Required for VNF containerization
+- ✅ **8GB+ RAM**: Recommended for optimal performance
+- ✅ **4+ CPU cores**: Recommended for DRL training
 
-## 📊 **System Endpoints**
+## 📊 **Live Monitoring Endpoints**
 
 Once running:
-- **Prometheus Metrics**: http://localhost:9090/metrics
-- **SDN Controller**: http://localhost:8080
-- **VNF Health**: http://localhost:8080/health
+- **🎛️ Grafana Dashboards**: http://localhost:3000 (admin/admin)
+- **📊 Prometheus Metrics**: http://localhost:9090
+- **🔧 SDN Controller**: http://localhost:8080
+- **📈 VNF Orchestrator**: http://localhost:9091
 
 ## 🔧 **Installation**
 
@@ -115,46 +126,53 @@ Once running:
 # Install dependencies
 pip install -r requirements.txt
 
-# Verify installation (works from anywhere)
-python test_anywhere.py
+# Build all VNF images
+python VNF_PERFORMANCE_TESTS.py build
+
+# Start orchestration system
+python VNF_PERFORMANCE_TESTS.py orchestrate
 ```
 
 ## 📚 **Documentation**
 
-- **Running the System**: [RUNNING_THE_SYSTEM.md](RUNNING_THE_SYSTEM.md)
-- **Metrics Fix**: [orchestration/METRICS_COLLISION_FIX.md](orchestration/METRICS_COLLISION_FIX.md)
-- **Project Structure**: [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)
+- **Project Status & Procedure**: [PROJECT_STATUS_AND_PROCEDURE.md](PROJECT_STATUS_AND_PROCEDURE.md)
+- **Live Monitoring Guide**: [LIVE_MONITORING_GUIDE.md](LIVE_MONITORING_GUIDE.md)
+- **Complete Testing Code**: [VNF_PERFORMANCE_TESTS.py](VNF_PERFORMANCE_TESTS.py)
 
 ## 🎉 **Success**
 
 When everything works, you'll see:
 ```
-🚀 VNF Service Function Chain Orchestration System
+🚀 Building all VNF images...
+✅ Built: 30+ VNFs
+🚀 Starting VNF Orchestration System...
 ✅ All orchestration components imported successfully
-✅ VNF Orchestrator initialized
-✅ SDN Controller initialized
-🎉 All components initialized successfully!
+📊 Test Case 1 Results: ✅ Success
+📊 Test Case 2 Results: ✅ Success  
+📊 Test Case 3 Results: ✅ Success
 ```
 
 ## 🆘 **Need Help?**
 
-1. **Use the universal launcher**: `python launch_orchestration.py`
-2. **Test first**: `python test_anywhere.py`
-3. **Check this README** for quick start
-4. **Read RUNNING_THE_SYSTEM.md** for detailed instructions
+1. **Build images**: `python VNF_PERFORMANCE_TESTS.py build`
+2. **Start orchestration**: `python VNF_PERFORMANCE_TESTS.py orchestrate`
+3. **Run tests**: `python VNF_PERFORMANCE_TESTS.py testall`
+4. **Check PROJECT_STATUS_AND_PROCEDURE.md** for detailed instructions
 
 ## 🚀 **Quick Commands Summary**
 
 ```bash
-# From ANY directory (NEW!)
-python launch_orchestration.py
+# Build all VNF images
+python VNF_PERFORMANCE_TESTS.py build
 
-# Test from anywhere (NEW!)
-python test_anywhere.py
+# Start orchestration system
+python VNF_PERFORMANCE_TESTS.py orchestrate
 
-# Traditional approach
-cd vnf-project
-python -m orchestration.integrated_system
+# Run performance tests
+python VNF_PERFORMANCE_TESTS.py test1    # End-to-end latency
+python VNF_PERFORMANCE_TESTS.py test2    # Tail latency percentiles
+python VNF_PERFORMANCE_TESTS.py test3    # Throughput at latency SLA
+python VNF_PERFORMANCE_TESTS.py testall  # All tests
 ```
 
 ---

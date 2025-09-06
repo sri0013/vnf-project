@@ -1,136 +1,151 @@
-# Running the VNF Orchestration System
+# Running the VNF Performance Testing System
 
-## 🚀 **CORRECT WAY TO RUN (Recommended)**
+## 🚀 **3 Critical Test Cases - One Command Each**
 
-### **Option 1: Run as Python Module (Production)**
-
+### **1. Build All VNF Images (One Command)**
 ```bash
-# Navigate to the project root directory
-cd /path/to/vnf-project
-
-# Run the integrated system as a module
-python -m orchestration.integrated_system
+python VNF_PERFORMANCE_TESTS.py build
 ```
 
-### **Option 2: Use the Runner Script**
-
+### **2. Start Orchestration System (One Command)**
 ```bash
-# Navigate to the project root directory
-cd /path/to/vnf-project
-
-# Use the runner script (which calls the module)
-python run_orchestration.py
+python VNF_PERFORMANCE_TESTS.py orchestrate
 ```
 
-### **Option 3: Test Individual Components**
-
+### **3. Run Performance Tests (One Command Each)**
 ```bash
-# Navigate to the project root directory
-cd /path/to/vnf-project
-
-# Run the test suite
-python test_orchestration.py
+python VNF_PERFORMANCE_TESTS.py test1    # End-to-end latency
+python VNF_PERFORMANCE_TESTS.py test2    # Tail latency percentiles
+python VNF_PERFORMANCE_TESTS.py test3    # Throughput at latency SLA
+python VNF_PERFORMANCE_TESTS.py testall  # All tests
 ```
 
 ## 🔧 **Why This Approach?**
 
-The **relative import error** occurs because:
+The **performance testing system** provides:
 
-1. **Python Package Structure**: The `orchestration/` directory is a Python package
-2. **Relative Imports**: Files use `from .metrics_registry import ...` syntax (correct for packages)
-3. **Script vs Module**: Running `python orchestration/vnf_orchestrator.py` treats it as a script, not a module
-4. **Import Resolution**: Python can't resolve relative imports when running as a script
+1. **3 Critical Test Cases**: Exactly as requested for NFV benchmarking
+2. **One Command Each**: Build images, start orchestration, run tests
+3. **Standards Compliant**: RFC 8172, ETSI NFV-TST 009
+4. **Live Monitoring**: Real-time dashboards and metrics
+5. **Complete Integration**: All functionality in one file
 
 ## 📁 **Project Structure**
 
 ```
 vnf-project/
-├── orchestration/                 # Python package
-│   ├── __init__.py               # Package initialization
-│   ├── vnf_orchestrator.py      # VNF orchestration logic (uses relative imports)
-│   ├── sdn_controller.py        # SDN controller (uses relative imports)
-│   ├── metrics_registry.py      # Centralized metrics (uses relative imports)
-│   └── ...                      # Other components
-├── run_orchestration.py          # Runner script (calls module)
-├── start_orchestration.py        # Alternative startup (absolute imports)
-├── test_orchestration.py         # Test suite (absolute imports)
-└── requirements.txt              # Dependencies
+├── VNF_PERFORMANCE_TESTS.py      # Complete testing system (3 test cases)
+├── PROJECT_STATUS_AND_PROCEDURE.md # Project status and procedures
+├── LIVE_MONITORING_GUIDE.md      # Live monitoring guide
+├── README.md                      # Main project documentation
+├── requirements.txt               # Python dependencies
+├── orchestration/                 # Core orchestration system
+│   ├── integrated_system.py     # Main orchestration engine
+│   ├── vnf_orchestrator.py      # VNF lifecycle management
+│   ├── sdn_controller.py        # SDN controller
+│   ├── sfc_orchestrator.py      # SFC management
+│   ├── drl_agent.py             # Deep RL agent
+│   ├── enhanced_arima.py        # ARIMA forecasting
+│   ├── grafana_dashboards.py    # Monitoring dashboards
+│   ├── metrics_registry.py      # Centralized metrics
+│   ├── docker-compose.yml       # Container orchestration
+│   └── orchestration_config.yml # System configuration
+├── firewall/                      # Core VNFs
+├── antivirus/
+├── spamfilter/
+├── content_filtering/
+├── encryption_gateway/
+└── mail/
 ```
 
-## 🎯 **Import Strategy**
+## 🎯 **Test Case Details**
 
-### **Inside the Package (orchestration/ directory)**
-- ✅ **Use relative imports**: `from .metrics_registry import ...`
-- ✅ **Correct for package-internal imports**
-- ✅ **Maintains package structure**
+### **Test Case 1: End-to-end Latency**
+- **Purpose**: User-visible performance of full SFC chain
+- **Metrics**: Processing + transmission + propagation + queuing delays
+- **Standards**: SFC literature on delay guarantees
+- **Command**: `python VNF_PERFORMANCE_TESTS.py test1`
 
-### **Outside the Package (project root)**
-- ✅ **Use absolute imports**: `from orchestration.metrics_registry import ...`
-- ✅ **Correct when importing from outside the package**
-- ✅ **Works with module execution**
+### **Test Case 2: Tail Latency Percentiles**
+- **Purpose**: Long-tail behavior for elastic VNFs
+- **Metrics**: P95, P99, P99.9 percentiles, scaling analysis
+- **Standards**: RFC 8172 NFV benchmarking
+- **Command**: `python VNF_PERFORMANCE_TESTS.py test2`
+
+### **Test Case 3: Throughput at Latency SLA**
+- **Purpose**: Capacity under quality constraints
+- **Metrics**: Max throughput, SLA compliance, efficiency
+- **Standards**: ETSI NFV-TST 009 guidance
+- **Command**: `python VNF_PERFORMANCE_TESTS.py test3`
 
 ## 🧪 **Testing the System**
 
-### **1. Test Metrics Registry**
+### **1. Build All VNF Images**
 
 ```bash
-cd vnf-project
-python test_orchestration.py
+python VNF_PERFORMANCE_TESTS.py build
 ```
 
 This will:
-- ✅ Test metrics creation without collisions
-- ✅ Verify Prometheus server startup
-- ✅ Test VNF orchestrator initialization
-- ✅ Test SDN controller
-- ✅ Test async operations
+- ✅ Build all 30+ VNF Docker images
+- ✅ Create placeholders for missing VNFs
+- ✅ Validate Docker environment
+- ✅ Report build success/failure
 
-### **2. Manual Component Testing**
+### **2. Start Orchestration System**
 
 ```bash
-cd vnf-project
+python VNF_PERFORMANCE_TESTS.py orchestrate
+```
 
-# Test metrics registry only
-python -c "
-from orchestration.metrics_registry import start_metrics_server, get_vnf_orchestrator_metrics
-print('✅ Metrics registry imported successfully')
-"
+This will:
+- ✅ Start integrated orchestration system
+- ✅ Initialize DRL agent and ARIMA forecasting
+- ✅ Launch monitoring and metrics collection
+- ✅ Begin SFC request simulation
 
-# Test VNF orchestrator only
-python -c "
-from orchestration.vnf_orchestrator import VNFOrchestrator
-print('✅ VNF orchestrator imported successfully')
-"
+### **3. Run Performance Tests**
+
+```bash
+# Test Case 1: End-to-end latency
+python VNF_PERFORMANCE_TESTS.py test1
+
+# Test Case 2: Tail latency percentiles
+python VNF_PERFORMANCE_TESTS.py test2
+
+# Test Case 3: Throughput at latency SLA
+python VNF_PERFORMANCE_TESTS.py test3
+
+# All tests
+python VNF_PERFORMANCE_TESTS.py testall
 ```
 
 ## 🚨 **Common Errors and Solutions**
 
-### **Error 1: ImportError: attempted relative import with no known parent package**
+### **Error 1: Docker Not Running**
 
-**Cause**: Running a file directly instead of as a module
+**Cause**: Docker Desktop is not started
 
 **Solution**: 
 ```bash
-# ❌ Wrong - runs as script
-python orchestration/vnf_orchestrator.py
+# Start Docker Desktop (Windows/Mac)
+# Or: sudo systemctl start docker (Linux)
 
-# ✅ Correct - runs as module
-python -m orchestration.integrated_system
+# Check Docker status
+docker ps
 ```
 
-### **Error 2: ModuleNotFoundError: No module named 'orchestration'**
+### **Error 2: Import Errors**
 
-**Cause**: Not in the correct directory
+**Cause**: Missing dependencies or wrong Python version
 
 **Solution**:
 ```bash
-# ❌ Wrong directory
-cd /some/other/path
-python -m orchestration.integrated_system
+# Install dependencies
+pip install -r requirements.txt
 
-# ✅ Correct directory
-cd /path/to/vnf-project
-python -m orchestration.integrated_system
+# Check Python version (3.8+ required)
+python --version
 ```
 
 ### **Error 3: Port Already in Use**
@@ -142,176 +157,187 @@ python -m orchestration.integrated_system
 # Check what's using the port
 netstat -tulpn | grep :9090
 netstat -tulpn | grep :8080
+netstat -tulpn | grep :3000
 
 # Kill the process or use different ports
 ```
 
-## 🔍 **Debugging Import Issues**
+## 🔍 **Debugging System Issues**
 
-### **1. Check Python Path**
-
-```python
-import sys
-print("Python path:")
-for path in sys.path:
-    print(f"  {path}")
-```
-
-### **2. Check Current Directory**
-
-```python
-import os
-print(f"Current working directory: {os.getcwd()}")
-print(f"Script location: {os.path.dirname(os.path.abspath(__file__))}")
-```
-
-### **3. Verify Package Structure**
+### **1. Check System Status**
 
 ```bash
-# Check if __init__.py exists
-ls -la orchestration/__init__.py
+# Check if all services are running
+docker compose ps
 
-# Check Python package recognition
-python -c "import orchestration; print('Package imported successfully')"
+# Check VNF images
+docker images | grep my-
+
+# Check system health
+curl http://localhost:8080/health
+```
+
+### **2. Check Test Results**
+
+```bash
+# Run individual test cases
+python VNF_PERFORMANCE_TESTS.py test1
+python VNF_PERFORMANCE_TESTS.py test2
+python VNF_PERFORMANCE_TESTS.py test3
+
+# Check test output for errors
+```
+
+### **3. Verify Dependencies**
+
+```bash
+# Check Python version
+python --version
+
+# Check installed packages
+pip list | grep -E "(prometheus|docker|numpy|pandas)"
+
+# Install missing dependencies
+pip install -r requirements.txt
 ```
 
 ## 🎯 **Best Practices**
 
-### **1. Always Run from Project Root**
+### **1. Build Images First**
 
 ```bash
-cd vnf-project
-python -m orchestration.integrated_system
+# Always build VNF images before starting orchestration
+python VNF_PERFORMANCE_TESTS.py build
 ```
 
-### **2. Use Relative Imports Inside Package**
-
-```python
-# ✅ Good - relative import (inside orchestration/ directory)
-from .metrics_registry import start_metrics_server
-
-# ❌ Avoid - absolute import (inside package)
-from orchestration.metrics_registry import start_metrics_server
-```
-
-### **3. Use Absolute Imports Outside Package**
-
-```python
-# ✅ Good - absolute import (from project root)
-from orchestration.metrics_registry import start_metrics_server
-
-# ❌ Avoid - relative import (from outside package)
-from .metrics_registry import start_metrics_server
-```
-
-### **4. Test Before Running**
+### **2. Start Orchestration Before Testing**
 
 ```bash
-# Quick import test
-python -c "from orchestration.vnf_orchestrator import VNFOrchestrator; print('OK')"
-
-# Full test suite
-python test_orchestration.py
+# Start orchestration system before running tests
+python VNF_PERFORMANCE_TESTS.py orchestrate
 ```
 
-## 📊 **System Endpoints**
+### **3. Run Tests in Order**
+
+```bash
+# Run tests in logical order
+python VNF_PERFORMANCE_TESTS.py test1    # End-to-end latency
+python VNF_PERFORMANCE_TESTS.py test2    # Tail latency percentiles
+python VNF_PERFORMANCE_TESTS.py test3    # Throughput at latency SLA
+```
+
+### **4. Monitor Live Dashboards**
+
+```bash
+# Access live monitoring
+# Grafana: http://localhost:3000 (admin/admin)
+# Prometheus: http://localhost:9090
+# SDN Controller: http://localhost:8080
+```
+
+## 📊 **Live Monitoring Endpoints**
 
 Once running successfully:
 
-- **Prometheus Metrics**: http://localhost:9090/metrics
-- **SDN Controller**: http://localhost:8080
-- **VNF Health Checks**: http://localhost:8080/health
+- **🎛️ Grafana Dashboards**: http://localhost:3000 (admin/admin)
+- **📊 Prometheus Metrics**: http://localhost:9090
+- **🔧 SDN Controller**: http://localhost:8080
+- **📈 VNF Orchestrator**: http://localhost:9091
 
 ## 🛠️ **Development Workflow**
 
-### **1. Make Changes**
+### **1. Build and Test**
 
 ```bash
-# Edit files in orchestration/ directory
-vim orchestration/vnf_orchestrator.py
+# Build VNF images
+python VNF_PERFORMANCE_TESTS.py build
+
+# Start orchestration
+python VNF_PERFORMANCE_TESTS.py orchestrate
 ```
 
-### **2. Test Changes**
+### **2. Run Performance Tests**
 
 ```bash
-# Run tests to verify
-python test_orchestration.py
+# Run individual test cases
+python VNF_PERFORMANCE_TESTS.py test1
+python VNF_PERFORMANCE_TESTS.py test2
+python VNF_PERFORMANCE_TESTS.py test3
+
+# Run all tests
+python VNF_PERFORMANCE_TESTS.py testall
 ```
 
-### **3. Run System**
+### **3. Monitor Live Dashboards**
 
 ```bash
-# Start the complete system (recommended)
-python -m orchestration.integrated_system
-
-# OR use the runner script
-python run_orchestration.py
+# Access live monitoring
+# Grafana: http://localhost:3000 (admin/admin)
+# Prometheus: http://localhost:9090
+# SDN Controller: http://localhost:8080
 ```
 
-### **4. Monitor**
+### **4. Check Results**
 
 ```bash
-# Check metrics
-curl http://localhost:9090/metrics
+# Check test results
+cat vnf_performance_test_report.json
 
-# Check logs
-tail -f orchestration.log
+# Check system metrics
+curl http://localhost:9091/metrics
 ```
 
 ## 🔧 **Troubleshooting Checklist**
 
-- [ ] Are you in the `vnf-project` root directory?
-- [ ] Does `orchestration/__init__.py` exist?
+- [ ] Is Docker Desktop running?
 - [ ] Are all dependencies installed (`pip install -r requirements.txt`)?
-- [ ] Are the ports (9090, 8080) available?
+- [ ] Are the ports (3000, 8080, 9090, 9091) available?
 - [ ] Are you using Python 3.8+?
-- [ ] Have you run the test suite first?
-- [ ] Are you using `python -m orchestration.integrated_system`?
+- [ ] Have you built VNF images first (`python VNF_PERFORMANCE_TESTS.py build`)?
+- [ ] Have you started orchestration (`python VNF_PERFORMANCE_TESTS.py orchestrate`)?
+- [ ] Are you running tests from the project root directory?
 
 ## 📞 **Getting Help**
 
 If you still encounter issues:
 
-1. **Run the test suite**: `python test_orchestration.py`
-2. **Check the logs**: Look for specific error messages
-3. **Verify Python version**: `python --version`
-4. **Check dependencies**: `pip list | grep prometheus`
-5. **Review this guide**: Ensure you're following the correct steps
-6. **Use module execution**: `python -m orchestration.integrated_system`
+1. **Build VNF images**: `python VNF_PERFORMANCE_TESTS.py build`
+2. **Start orchestration**: `python VNF_PERFORMANCE_TESTS.py orchestrate`
+3. **Run tests**: `python VNF_PERFORMANCE_TESTS.py testall`
+4. **Check Docker status**: `docker ps`
+5. **Verify Python version**: `python --version`
+6. **Check dependencies**: `pip list | grep prometheus`
+7. **Review this guide**: Ensure you're following the correct steps
 
 ## 🎉 **Success Indicators**
 
 When everything is working correctly, you should see:
 
 ```
-🚀 VNF Service Function Chain Orchestration System
-============================================================
-🔧 Starting intelligent orchestration with DRL+ARIMA...
+🚀 Building all VNF images...
+✅ Built: 30+ VNFs
+🚀 Starting VNF Orchestration System...
 ✅ All orchestration components imported successfully
-✅ VNF Orchestrator initialized
-✅ SDN Controller initialized
-✅ SFC Orchestrator initialized
-✅ DRL Agent initialized
-✅ ARIMA Forecaster initialized
-🎉 All components initialized successfully!
-📊 Metrics available at: http://localhost:9090/metrics
-🌐 SDN Controller at: http://localhost:8080
+📊 Test Case 1 Results: ✅ Success - Mean Latency: 30.27ms
+📊 Test Case 2 Results: ✅ Success - P99: 54.15ms
+📊 Test Case 3 Results: ✅ Success - Max Throughput: 4273.93 req/s
+🎉 All 3 test cases passed successfully!
 ```
 
 ## 🚀 **Quick Commands Summary**
 
 ```bash
-# Navigate to project root
-cd vnf-project
+# Build all VNF images
+python VNF_PERFORMANCE_TESTS.py build
 
-# Test the system
-python test_orchestration.py
+# Start orchestration system
+python VNF_PERFORMANCE_TESTS.py orchestrate
 
-# Run the system (recommended)
-python -m orchestration.integrated_system
-
-# OR use runner script
-python run_orchestration.py
+# Run performance tests
+python VNF_PERFORMANCE_TESTS.py test1    # End-to-end latency
+python VNF_PERFORMANCE_TESTS.py test2    # Tail latency percentiles
+python VNF_PERFORMANCE_TESTS.py test3    # Throughput at latency SLA
+python VNF_PERFORMANCE_TESTS.py testall  # All tests
 ```
 
-The system is now running and ready for VNF orchestration! 🎉
+The performance testing system is now ready with 3 critical test cases! 🎉

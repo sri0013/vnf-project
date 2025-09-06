@@ -8,6 +8,10 @@ import sys
 import os
 import asyncio
 import logging
+import signal
+import json
+from typing import Dict, List, Optional, Any
+from concurrent.futures import ThreadPoolExecutor
 
 # Add the project root to Python path for imports
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,8 +30,9 @@ try:
     from orchestration.vnf_orchestrator import VNFOrchestrator
     from orchestration.sdn_controller import SDNController
     from orchestration.sfc_orchestrator import SFCOrchestrator
-    from orchestration.drl_agent import DRLAgent
+    from orchestration.drl_agent import DRLAgent, SFCState, SFCAction, ActionType
     from orchestration.enhanced_arima import EnhancedARIMAForecaster
+    from orchestration.grafana_dashboards import GrafanaDashboardGenerator
     logger.info("✅ All orchestration components imported successfully")
 except ImportError as e:
     logger.error(f"❌ Import error: {e}")
@@ -290,7 +295,7 @@ class IntegratedNFVSystem:
         
         # Get installed VNFs
         installed_vnfs = {}
-        vnf_types = ['firewall', 'antivirus', 'spamfilter', 'encryption_gateway', 'content_filtering', 'mail']
+        vnf_types = ['firewall', 'spamfilter', 'contentfilter', 'encryption']
         for vnf_type in vnf_types:
             instances = self.orchestrator.get_vnf_instances(vnf_type)
             installed_vnfs[vnf_type] = len(instances)
@@ -408,7 +413,7 @@ class IntegratedNFVSystem:
         # Simulate SFC creation
         sfc_config = {
             'chain_id': f'sfc_{self.metrics["sfc_requests"]}',
-            'vnf_sequence': ['firewall', 'antivirus', 'spamfilter'],
+            'vnf_sequence': ['firewall', 'spamfilter', 'contentfilter', 'encryption'],
             'bandwidth': 50,
             'latency_constraint': 500
         }
@@ -446,7 +451,7 @@ class IntegratedNFVSystem:
     
     def _select_vnf_for_scaling(self) -> str:
         """Select VNF type for scaling out"""
-        vnf_types = ['firewall', 'antivirus', 'spamfilter', 'encryption_gateway', 'content_filtering', 'mail']
+        vnf_types = ['firewall', 'spamfilter', 'contentfilter', 'encryption']
         
         # Find VNF with highest load
         max_load = 0
@@ -462,7 +467,7 @@ class IntegratedNFVSystem:
     
     def _select_vnf_for_removal(self) -> str:
         """Select VNF type for scaling in"""
-        vnf_types = ['firewall', 'antivirus', 'spamfilter', 'encryption_gateway', 'content_filtering', 'mail']
+        vnf_types = ['firewall', 'spamfilter', 'contentfilter', 'encryption']
         
         # Find VNF with lowest load
         min_load = float('inf')

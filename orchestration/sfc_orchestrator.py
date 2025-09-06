@@ -14,10 +14,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 import random
 
-from drl_agent import DRLAgent, SFCState, SFCAction, ActionType
-from enhanced_arima import EnhancedARIMAForecaster
-from vnf_orchestrator import VNFOrchestrator
-from sdn_controller import SDNController
+from .drl_agent import DRLAgent, SFCState, SFCAction, ActionType
+from .enhanced_arima import EnhancedARIMAForecaster
+from .vnf_orchestrator import VNFOrchestrator
+from .sdn_controller import SDNController
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

@@ -21,11 +21,9 @@ def check_docker_images():
     """Check if required Docker images exist"""
     required_images = [
         'my-firewall-vnf',
-        'my-antivirus-vnf',
         'my-spamfilter-vnf',
         'my-encryption-vnf',
-        'my-contentfilter-vnf',
-        'my-mail-vnf'
+        'my-contentfilter-vnf'
     ]
     missing = []
     for img in required_images:
@@ -44,8 +42,7 @@ def check_docker_images():
     return True
 
 def cleanup_containers():
-    names = ['vnf-firewall','vnf-antivirus','vnf-spamfilter',
-             'vnf-encryption','vnf-contentfilter','vnf-mail']
+    names = ['vnf-firewall','vnf-spamfilter','vnf-encryption','vnf-contentfilter']
     for n in names:
         subprocess.run(['docker','stop',n], capture_output=True)
         subprocess.run(['docker','rm',n], capture_output=True)
@@ -69,7 +66,7 @@ def create_sfc_network():
     h2 = net.addHost('h2', ip='10.0.0.2/24')
     h3 = net.addHost('h3', ip='10.0.0.3/24')
     h4 = net.addHost('h4', ip='10.0.0.4/24')
-    mail = net.addHost('mail', ip='10.0.0.100/24')
+    # Removed dedicated mail host for text-only chain demo
 
     info("🔌 Creating switches...\n")
     s1 = net.addSwitch('s1')
@@ -78,7 +75,7 @@ def create_sfc_network():
     info("🔗 Linking hosts and switches...\n")
     for h in (h1,h2,h3,h4):
         net.addLink(h, s1, bw=10)
-    net.addLink(mail, s2, bw=10)
+    # Mail host link removed
     net.addLink(s1, s2, bw=100)
 
     info("🚀 Starting network...\n")
@@ -88,15 +85,13 @@ def create_sfc_network():
     vnf_containers = []
     vnfs = [
         ('firewall',    'my-firewall-vnf',    'vnf-firewall'),
-        ('antivirus',   'my-antivirus-vnf',   'vnf-antivirus'),
         ('spamfilter',  'my-spamfilter-vnf',  'vnf-spamfilter'),
         ('encryption',  'my-encryption-vnf',  'vnf-encryption'),
-        ('contentfilter','my-contentfilter-vnf','vnf-contentfilter'),
-        ('mail',        'my-mail-vnf',        'vnf-mail')
+        ('contentfilter','my-contentfilter-vnf','vnf-contentfilter')
     ]
     for name,img,cont in vnfs:
         info(f"Starting {name}...\n")
-        mode = 'host' if name=='mail' else 'bridge'
+        mode = 'bridge'
         res = subprocess.run([
             'docker','run','-d','--name',cont,
             '--network',mode,img
@@ -108,11 +103,9 @@ def create_sfc_network():
             info(f"❌ {name} failed: {res.stderr}\n")
 
     info("\n🔍 Testing basic connectivity\n")
-    net.ping([h1,h2,h3,h4,mail])
+    net.ping([h1,h2,h3,h4])
 
-    info("🔧 Starting SMTP server on mail host...\n")
-    mail.cmd('python3 -m aiosmtpd -n -l 0.0.0.0:2525 &')
-    info("✅ SMTP debug server running on mail:2525\n")
+    # SMTP debug server removed for text-only chain demo
 
     info("\n💻 Entering CLI\n")
     CLI(net)
