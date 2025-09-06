@@ -1,0 +1,29 @@
+{
+  "dashboards": [
+    {
+      "name": "Vnf Overview",
+      "file": "vnf_overview_dashboard.json",
+      "description": "Comprehensive overview of VNF instances, resource usage, and health status"
+    },
+    {
+      "name": "Drl Agent",
+      "file": "drl_agent_dashboard.json",
+      "description": "Deep Reinforcement Learning agent training metrics and performance indicators"
+    },
+    {
+      "name": "Arima Forecasting",
+      "file": "arima_forecasting_dashboard.json",
+      "description": "ARIMA forecasting results, accuracy metrics, and scaling recommendations"
+    },
+    {
+      "name": "Sfc Performance",
+      "file": "sfc_performance_dashboard.json",
+      "description": "Service Function Chain performance metrics including latency and throughput"
+    },
+    {
+      "name": "Alerting",
+      "file": "alerting_dashboard.json",
+      "description": "Active alerts, alert history, and severity distribution"
+    }
+  ]
+}

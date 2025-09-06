@@ -33,6 +33,7 @@ try:
     from orchestration.drl_agent import DRLAgent, SFCState, SFCAction, ActionType
     from orchestration.enhanced_arima import EnhancedARIMAForecaster
     from orchestration.grafana_dashboards import GrafanaDashboardGenerator
+    from orchestration.metrics_registry import MetricsRegistry, get_vnf_orchestrator_metrics, start_metrics_server
     logger.info("✅ All orchestration components imported successfully")
 except ImportError as e:
     logger.error(f"❌ Import error: {e}")
