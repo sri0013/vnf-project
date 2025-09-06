@@ -72,12 +72,10 @@ vnf-project/
 │   ├── docker-compose.yml           # Container orchestration
 │   └── *.yml                        # Configuration files
 ├── 
-├── firewall/                         # Core VNFs
-├── antivirus/
+├── firewall/                         # Core VNFs (4 essential)
 ├── spamfilter/
 ├── encryption_gateway/
 ├── content_filtering/
-├── mail/
 ├── 
 ├── smtp_firewall/                    # Extended VNFs
 ├── anti_spam_phishing/

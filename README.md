@@ -22,9 +22,9 @@ python VNF_PERFORMANCE_TESTS.py testall  # All tests
 
 ## 🔧 **What This System Does (Simple)**
 
-This project chains security functions for email traffic on one machine. It sends each message through:
+This project chains **4 core security functions** for email traffic on one machine. It sends each message through:
 
-- Firewall → Spam filter → Content filter/DLP → Encryption with TLS checks
+- **Firewall** → **Spam Filter** → **Content Filter** → **TLS/Encryption Gateway**
 
 The SDN controller steers packets between VNFs; DRL + ARIMA decide when to reuse or scale VNFs to keep latency low.
 
@@ -46,18 +46,17 @@ vnf-project/
 │   ├── metrics_registry.py      # Centralized metrics
 │   ├── docker-compose.yml       # Container orchestration
 │   └── orchestration_config.yml # System configuration
-├── firewall/                     # Core VNFs
-├── antivirus/
+├── firewall/                     # Core VNFs (4 essential)
 ├── spamfilter/
 ├── content_filtering/
 ├── encryption_gateway/
-├── mail/
 ├── requirements.txt              # Dependencies
 └── README.md                     # This file
 ```
 
 ## 🎯 **Key Features**
 
+- ✅ **4 Core VNFs**: Firewall, Spam Filter, Content Filter, TLS/Encryption Gateway
 - ✅ **3 Critical Test Cases**: End-to-end latency, tail latency percentiles, throughput at SLA
 - ✅ **One Command Each**: Build images, start orchestration, run tests
 - ✅ **DRL + ARIMA Orchestration**: Intelligent scaling decisions
@@ -144,7 +143,7 @@ python VNF_PERFORMANCE_TESTS.py orchestrate
 When everything works, you'll see:
 ```
 🚀 Building all VNF images...
-✅ Built: 30+ VNFs
+✅ Built: 4 VNFs
 🚀 Starting VNF Orchestration System...
 ✅ All orchestration components imported successfully
 📊 Test Case 1 Results: ✅ Success

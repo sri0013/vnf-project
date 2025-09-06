@@ -87,8 +87,7 @@ python VNF_PERFORMANCE_TESTS.py build
 ```
 
 This will:
-- ✅ Build all 30+ VNF Docker images
-- ✅ Create placeholders for missing VNFs
+- ✅ Build 4 core VNF Docker images (Firewall, Spam Filter, Content Filter, TLS/Encryption)
 - ✅ Validate Docker environment
 - ✅ Report build success/failure
 
@@ -315,7 +314,7 @@ When everything is working correctly, you should see:
 
 ```
 🚀 Building all VNF images...
-✅ Built: 30+ VNFs
+✅ Built: 4 VNFs
 🚀 Starting VNF Orchestration System...
 ✅ All orchestration components imported successfully
 📊 Test Case 1 Results: ✅ Success - Mean Latency: 30.27ms

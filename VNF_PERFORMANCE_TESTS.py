@@ -59,48 +59,11 @@ class VNFImageBuilder:
     
     def __init__(self):
         self.vnfs = [
-            # Core VNFs
+            # Core VNFs - Only the 4 essential email security VNFs
             {"dir": "firewall", "image": "my-firewall-vnf"},
-            {"dir": "antivirus", "image": "my-antivirus-vnf"},
             {"dir": "spamfilter", "image": "my-spamfilter-vnf"},
-            {"dir": "encryption_gateway", "image": "my-encryption-vnf"},
             {"dir": "content_filtering", "image": "my-contentfilter-vnf"},
-            {"dir": "mail", "image": "my-mail-vnf"},
-            
-            # Inbound User Protection VNFs
-            {"dir": "smtp_firewall", "image": "my-smtp-firewall-vnf"},
-            {"dir": "anti_spam_phishing", "image": "my-anti-spam-phishing-vnf"},
-            {"dir": "anti_virus_sandbox", "image": "my-anti-virus-sandbox-vnf"},
-            {"dir": "url_rewrite_clicktime", "image": "my-url-rewrite-clicktime-vnf"},
-            {"dir": "delivery_agent", "image": "my-delivery-agent-vnf"},
-            
-            # Outbound Data Protection VNFs
-            {"dir": "policy_classifier", "image": "my-policy-classifier-vnf"},
-            {"dir": "dlp", "image": "my-dlp-vnf"},
-            {"dir": "encryption_signing", "image": "my-encryption-signing-vnf"},
-            {"dir": "disclaimer_brand", "image": "my-disclaimer-brand-vnf"},
-            {"dir": "archiver_journal", "image": "my-archiver-journal-vnf"},
-            {"dir": "smart_host", "image": "my-smart-host-vnf"},
-            
-            # Authentication & Anti-Spoof VNFs
-            {"dir": "spf_dkim_dmarc_validator", "image": "my-spf-dkim-dmarc-validator-vnf"},
-            {"dir": "anti_spoof_bec", "image": "my-anti-spoof-bec-vnf"},
-            {"dir": "policy_engine", "image": "my-policy-engine-vnf"},
-            {"dir": "delivery_quarantine", "image": "my-delivery-quarantine-vnf"},
-            
-            # Attachment Risk Reduction VNFs
-            {"dir": "reputation_graylist", "image": "my-reputation-graylist-vnf"},
-            {"dir": "multi_engine_av", "image": "my-multi-engine-av-vnf"},
-            {"dir": "sandbox_detonation", "image": "my-sandbox-detonation-vnf"},
-            {"dir": "file_type_control", "image": "my-file-type-control-vnf"},
-            {"dir": "content_disarm_reconstruct", "image": "my-content-disarm-reconstruct-vnf"},
-            
-            # Branch Cloud SaaS Access VNFs
-            {"dir": "dns_url_filter", "image": "my-dns-url-filter-vnf"},
-            {"dir": "attachment_sandbox_edge", "image": "my-attachment-sandbox-edge-vnf"},
-            {"dir": "split_tunnel_steering", "image": "my-split-tunnel-steering-vnf"},
-            {"dir": "sdwan_forwarder", "image": "my-sdwan-forwarder-vnf"},
-            {"dir": "tls_enforcement_saas", "image": "my-tls-enforcement-saas-vnf"}
+            {"dir": "encryption_gateway", "image": "my-encryption-vnf"}
         ]
         
         self.success_count = 0
@@ -281,7 +244,7 @@ class VNFPerformanceTester:
             'latency_sla_threshold': 500,  # ms
             'throughput_target': 1000,  # requests/second
             'tail_percentiles': [95, 99, 99.9],
-            'vnf_chain': ['firewall', 'spamfilter', 'contentfilter', 'encryption']
+            'vnf_chain': ['firewall', 'spamfilter', 'content_filtering', 'encryption_gateway']
         }
     
     async def test_end_to_end_latency(self) -> TestResult:

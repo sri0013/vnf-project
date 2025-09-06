@@ -22,12 +22,10 @@ vnf-project/
 │   ├── orchestration_config.yml  # System configuration
 │   ├── prometheus_config.yml     # Prometheus configuration
 │   └── vnf_rules.yml            # VNF scaling rules
-├── firewall/                      # Core VNFs
-├── antivirus/
+├── firewall/                      # Core VNFs (4 essential)
 ├── spamfilter/
 ├── content_filtering/
 ├── encryption_gateway/
-└── mail/
 ```
 
 ## 🧹 Cleanup Summary
@@ -57,12 +55,12 @@ vnf-project/
 ## 🎯 Key Features - Performance Testing System
 
 ### Core Functionality
+- ✅ **4 Core VNFs**: Firewall, Spam Filter, Content Filter, TLS/Encryption Gateway
 - ✅ **3 Critical Test Cases**: End-to-end latency, tail latency percentiles, throughput at SLA
 - ✅ **One Command Each**: Build images, start orchestration, run tests
-- ✅ **30+ VNF Types**: All comprehensive email security VNFs
 - ✅ **DRL Agent**: Deep Q-Network with Attention Mechanism
 - ✅ **ARIMA Forecasting**: Seasonal ARIMA with confidence intervals
-- ✅ **SFC Orchestration**: Bidirectional email security chains
+- ✅ **SFC Orchestration**: Email security chains
 - ✅ **Live Monitoring**: Real-time dashboards and metrics
 
 ### Performance Test Cases
@@ -113,11 +111,13 @@ python VNF_PERFORMANCE_TESTS.py testall  # All tests
 ## ✅ Project Status
 
 **Status**: Complete Performance Testing System  
+**VNFs**: 4 Core email security VNFs  
 **Test Cases**: 3 Critical NFV benchmarking tests  
 **Documentation**: Clean, focused, comprehensive  
 **Code**: Optimized, tested, validated  
 
 The project is now streamlined with:
+- **4 core VNFs** (Firewall, Spam Filter, Content Filter, TLS/Encryption)
 - **3 critical test cases** as requested
 - **One command each** for all operations
 - **Live monitoring** capabilities

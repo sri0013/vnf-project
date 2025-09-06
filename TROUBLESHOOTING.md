@@ -197,7 +197,7 @@ python VNF_PERFORMANCE_TESTS.py testall
 ```
 
 **What it does**:
-- ✅ Builds all 30+ VNF Docker images
+- ✅ Builds 4 core VNF Docker images (Firewall, Spam Filter, Content Filter, TLS/Encryption)
 - ✅ Starts integrated orchestration system
 - ✅ Runs all 3 critical test cases
 - ✅ Provides comprehensive results
