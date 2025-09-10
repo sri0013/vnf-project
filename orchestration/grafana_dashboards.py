@@ -199,6 +199,209 @@ class GrafanaDashboardGenerator:
         
         return dashboard
     
+    def create_latency_improvement_dashboard(self) -> Dict:
+        """Create Latency Improvement Overview Dashboard"""
+        dashboard = {
+            "dashboard": {
+                "id": None,
+                "uid": "latency-improvement",
+                "title": "Latency Improvement Overview",
+                "tags": ["latency", "improvement", "sfc"],
+                "style": "dark",
+                "timezone": "browser",
+                "panels": [
+                    # Panel 1: End-to-End Latency Trend (Current P95 vs Baseline)
+                    {
+                        "id": 1,
+                        "title": "End-to-End Latency Trend",
+                        "type": "timeseries",
+                        "targets": [
+                            {
+                                "expr": "histogram_quantile(0.95, rate(sfc_current_latency_seconds_bucket[5m]))",
+                                "legendFormat": "Current P95 Latency"
+                            },
+                            {
+                                "expr": "vector(0.14)",
+                                "legendFormat": "Baseline P95 (140 ms)"
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "unit": "s",
+                                "color": {"mode": "palette-classic"},
+                                "custom": {
+                                    "drawStyle": "line",
+                                    "lineInterpolation": "linear",
+                                    "lineWidth": 2,
+                                    "fillOpacity": 10
+                                }
+                            }
+                        },
+                        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0}
+                    },
+                    
+                    # Panel 2: Test Case 1 Improvement % (Stat)
+                    {
+                        "id": 2,
+                        "title": "Test Case 1 Improvement %",
+                        "type": "stat",
+                        "targets": [
+                            {
+                                "expr": "((0.14 - histogram_quantile(0.95, rate(sfc_current_latency_seconds_bucket[5m]))) / 0.14) * 100",
+                                "legendFormat": "Improvement"
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "unit": "percent",
+                                "thresholds": {
+                                    "mode": "absolute",
+                                    "steps": [
+                                        {"color": "red", "value": None},
+                                        {"color": "orange", "value": 15},
+                                        {"color": "green", "value": 30}
+                                    ]
+                                }
+                            }
+                        },
+                        "gridPos": {"h": 6, "w": 8, "x": 0, "y": 8}
+                    },
+                    
+                    # Panel 3: Tail Latency Distribution (P50/P95/P99/P99.9)
+                    {
+                        "id": 3,
+                        "title": "Tail Latency Distribution",
+                        "type": "timeseries",
+                        "targets": [
+                            {"expr": "histogram_quantile(0.50, rate(sfc_current_latency_seconds_bucket[5m]))", "legendFormat": "P50"},
+                            {"expr": "histogram_quantile(0.95, rate(sfc_current_latency_seconds_bucket[5m]))", "legendFormat": "P95"},
+                            {"expr": "histogram_quantile(0.99, rate(sfc_current_latency_seconds_bucket[5m]))", "legendFormat": "P99"},
+                            {"expr": "histogram_quantile(0.999, rate(sfc_current_latency_seconds_bucket[5m]))", "legendFormat": "P99.9"}
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "unit": "s",
+                                "color": {"mode": "palette-classic"},
+                                "custom": {"drawStyle": "line", "lineWidth": 2}
+                            }
+                        },
+                        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 14}
+                    },
+                    
+                    # Panel 4: P99 Improvement % (Stat)
+                    {
+                        "id": 4,
+                        "title": "P99 Improvement %",
+                        "type": "stat",
+                        "targets": [
+                            {
+                                "expr": "((0.32 - histogram_quantile(0.99, rate(sfc_current_latency_seconds_bucket[5m]))) / 0.32) * 100",
+                                "legendFormat": "P99 Improvement"
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "unit": "percent",
+                                "thresholds": {
+                                    "mode": "absolute",
+                                    "steps": [
+                                        {"color": "red", "value": None},
+                                        {"color": "orange", "value": 15},
+                                        {"color": "green", "value": 30}
+                                    ]
+                                }
+                            }
+                        },
+                        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 8}
+                    },
+                    
+                    # Panel 5: Throughput at 100 ms SLA Trend
+                    {
+                        "id": 5,
+                        "title": "Throughput at 100 ms SLA",
+                        "type": "timeseries",
+                        "targets": [
+                            {
+                                "expr": "rate(sfc_requests_processed_total{latency_bucket=\"le_0.1\"}[5m])",
+                                "legendFormat": "Throughput under 100 ms SLA"
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "unit": "req/s",
+                                "color": {"mode": "palette-classic"},
+                                "custom": {"drawStyle": "line", "lineWidth": 2}
+                            }
+                        },
+                        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 22}
+                    },
+                    
+                    # Panel 6: Throughput Improvement % (Stat)
+                    {
+                        "id": 6,
+                        "title": "Throughput Improvement %",
+                        "type": "stat",
+                        "targets": [
+                            {
+                                "expr": "((rate(sfc_requests_processed_total{latency_bucket=\"le_0.1\"}[5m]) - 2100) / 2100) * 100",
+                                "legendFormat": "Throughput Improvement"
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "unit": "percent",
+                                "thresholds": {
+                                    "mode": "absolute",
+                                    "steps": [
+                                        {"color": "red", "value": None},
+                                        {"color": "orange", "value": 0},
+                                        {"color": "green", "value": 15}
+                                    ]
+                                }
+                            }
+                        },
+                        "gridPos": {"h": 6, "w": 8, "x": 16, "y": 8}
+                    },
+                    
+                    # Panel 7: Latency Component Breakdown
+                    {
+                        "id": 7,
+                        "title": "Latency Component Breakdown",
+                        "type": "timeseries",
+                        "targets": [
+                            {
+                                "expr": "rate(vnf_processing_latency_seconds_sum[5m]) / rate(vnf_processing_latency_seconds_count[5m])",
+                                "legendFormat": "Processing"
+                            },
+                            {
+                                "expr": "rate(vnf_queuing_latency_seconds_sum[5m]) / rate(vnf_queuing_latency_seconds_count[5m])",
+                                "legendFormat": "Queuing"
+                            },
+                            {
+                                "expr": "rate(sdn_network_latency_seconds_sum[5m]) / rate(sdn_network_latency_seconds_count[5m])",
+                                "legendFormat": "Network"
+                            }
+                        ],
+                        "fieldConfig": {
+                            "defaults": {
+                                "unit": "s",
+                                "color": {"mode": "palette-classic"},
+                                "custom": {"drawStyle": "line", "lineWidth": 2}
+                            }
+                        },
+                        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 30}
+                    }
+                ],
+                "time": {"from": "now-6h", "to": "now"},
+                "timepicker": {},
+                "templating": {"list": []},
+                "annotations": {"list": []},
+                "refresh": "10s"
+            }
+        }
+        
+        return dashboard
+    
     def create_drl_agent_dashboard(self) -> Dict:
         """Create DRL Agent Dashboard"""
         dashboard = {
@@ -861,7 +1064,8 @@ class GrafanaDashboardGenerator:
             "drl_agent": self.create_drl_agent_dashboard(),
             "arima_forecasting": self.create_arima_forecasting_dashboard(),
             "sfc_performance": self.create_sfc_performance_dashboard(),
-            "alerting": self.create_alerting_dashboard()
+            "alerting": self.create_alerting_dashboard(),
+            "latency_improvement": self.create_latency_improvement_dashboard()
         }
         
         # Save each dashboard to file
@@ -902,7 +1106,8 @@ class GrafanaDashboardGenerator:
             "drl_agent": "Deep Reinforcement Learning agent training metrics and performance indicators",
             "arima_forecasting": "ARIMA forecasting results, accuracy metrics, and scaling recommendations",
             "sfc_performance": "Service Function Chain performance metrics including latency and throughput",
-            "alerting": "Active alerts, alert history, and severity distribution"
+            "alerting": "Active alerts, alert history, and severity distribution",
+            "latency_improvement": "Real-time latency improvement tracking across test cases with component breakdown"
         }
         return descriptions.get(name, "Dashboard for monitoring and visualization")
 

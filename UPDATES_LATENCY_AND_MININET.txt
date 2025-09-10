@@ -1,0 +1,46 @@
+Latency Improvement Dashboard + Mininet Light Mode (6 GB VM)
+
+Date: 2025-09-10
+
+1) Grafana/Prometheus: Latency Improvement Overview
+- Dashboard UID: latency-improvement
+- JSON: orchestration/grafana/dashboards/latency_improvement_dashboard.json
+- Time range: Last 6 hours | Refresh: 10s
+- Import JSON in Grafana; optional annotations for DRL updates
+
+PromQL (key queries)
+- P95 current: histogram_quantile(0.95, rate(sfc_current_latency_seconds_bucket[5m]))
+- P95 baseline: vector(0.14)
+- P95 improvement %: ((0.14 - histogram_quantile(0.95, rate(sfc_current_latency_seconds_bucket[5m]))) / 0.14) * 100
+- P50/P95/P99/P99.9: histogram_quantile(0.50/0.95/0.99/0.999, rate(sfc_current_latency_seconds_bucket[5m]))
+- Baselines: P50=0.085, P95=0.18, P99=0.32, P99.9=0.58 (vector constants)
+- P99 improvement %: ((0.32 - histogram_quantile(0.99, rate(sfc_current_latency_seconds_bucket[5m]))) / 0.32) * 100
+- Throughput <100ms: rate(sfc_requests_processed_total{latency_bucket="le_0.1"}[5m])
+- Throughput improvement %: ((rate(sfc_requests_processed_total{latency_bucket="le_0.1"}[5m]) - 2100) / 2100) * 100
+- Processing: rate(vnf_processing_latency_seconds_sum[5m]) / rate(vnf_processing_latency_seconds_count[5m])
+- Queuing:    rate(vnf_queuing_latency_seconds_sum[5m]) / rate(vnf_queuing_latency_seconds_count[5m])
+- Network:    rate(sdn_network_latency_seconds_sum[5m]) / rate(sdn_network_latency_seconds_count[5m])
+
+Panels
+- P95 vs baseline (timeseries), P95 improvement % (stat)
+- P50/P95/P99/P99.9 (timeseries), P99 improvement % (stat)
+- <100ms throughput (timeseries), throughput improvement % (stat)
+- Component breakdown: processing/queuing/network (timeseries)
+
+Regenerate JSON
+- cd orchestration && python grafana_dashboards.py
+- Outputs: orchestration/grafana/dashboards/ and dashboard_index.json
+- PromQL refs: orchestration/grafana/queries/latency_improvement_promql.txt
+
+2) Mininet Integration (Light Mode)
+- Script: scripts/sfc_topology.py
+- Flags: --light (2 hosts, 1 switch), --no-vnfs, --no-cli
+
+Recommended commands
+- Minimal: sudo -E python3 scripts/sfc_topology.py --light --no-vnfs --no-cli
+- Light + CLI: sudo -E python3 scripts/sfc_topology.py --light --no-vnfs
+- Full: sudo -E python3 scripts/sfc_topology.py
+
+Notes
+- If starting VNFs, ensure images: my-firewall-vnf, my-spamfilter-vnf, my-encryption-vnf, my-contentfilter-vnf
+- When compose stack (Prometheus/Grafana/Controller) is running, prefer --light/--no-vnfs on 6 GB RAM

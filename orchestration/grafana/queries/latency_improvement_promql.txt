@@ -1,0 +1,51 @@
+Test Case 1: End-to-End Latency
+Current P95 Latency
+histogram_quantile(0.95, rate(sfc_current_latency_seconds_bucket[5m]))
+
+Baseline P95 (constant)
+vector(0.14)  # 140 ms baseline
+
+Improvement Percentage
+((0.14 - histogram_quantile(0.95, rate(sfc_current_latency_seconds_bucket[5m]))) / 0.14) * 100
+
+---
+
+Test Case 2: Tail Latency Percentiles
+Current P50, P95, P99, P99.9
+histogram_quantile(0.50, rate(sfc_current_latency_seconds_bucket[5m]))
+histogram_quantile(0.95, rate(sfc_current_latency_seconds_bucket[5m]))
+histogram_quantile(0.99, rate(sfc_current_latency_seconds_bucket[5m]))
+histogram_quantile(0.999, rate(sfc_current_latency_seconds_bucket[5m]))
+
+Baseline Percentiles (constants)
+vector(0.085)  # 85 ms P50
+vector(0.18)   # 180 ms P95
+vector(0.32)   # 320 ms P99
+vector(0.58)   # 580 ms P99.9
+
+Improvement Percentage for P99
+((0.32 - histogram_quantile(0.99, rate(sfc_current_latency_seconds_bucket[5m]))) / 0.32) * 100
+
+---
+
+Test Case 3: Throughput at Latency SLA
+Current Throughput under 100 ms SLA
+rate(sfc_requests_processed_total{latency_bucket="le_0.1"}[5m])
+
+Baseline Throughput (constant)
+vector(2100)  # 2100 req/s baseline
+
+Improvement Percentage
+((rate(sfc_requests_processed_total{latency_bucket="le_0.1"}[5m]) - 2100) / 2100) * 100
+
+---
+
+Component-Level Latency Breakdown
+Processing Delay
+rate(vnf_processing_latency_seconds_sum[5m]) / rate(vnf_processing_latency_seconds_count[5m])
+
+Queuing Delay
+rate(vnf_queuing_latency_seconds_sum[5m]) / rate(vnf_queuing_latency_seconds_count[5m])
+
+Network Delay
+rate(sdn_network_latency_seconds_sum[5m]) / rate(sdn_network_latency_seconds_count[5m])

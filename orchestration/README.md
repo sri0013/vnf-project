@@ -40,7 +40,7 @@ python integrated_system.py
 - **Intelligent Allocation**: DRL+ARIMA integration for optimal placement
 
 #### Monitoring (`grafana_dashboards.py`)
-- **Dashboards**: 5 comprehensive Grafana dashboards
+- **Dashboards**: 6 comprehensive Grafana dashboards
 - **Metrics**: Real-time performance monitoring
 - **Alerting**: SLA violation detection
 
@@ -121,10 +121,15 @@ python -c "from sfc_orchestrator import SFCOrchestrator; orchestrator = SFCOrche
 3. **ARIMA Forecasting**: Forecast accuracy and confidence intervals
 4. **SFC Performance**: Chain allocation and throughput metrics
 5. **Alerting**: SLA violations and system alerts
+6. **Latency Improvement Overview**: Track latency improvements across test cases
+6. **Latency Improvement Overview**: End-to-end and tail latency, throughput at SLA, and component breakdown with improvement percentages
 
 ### Access URLs
 - **Grafana**: http://localhost:3000 (admin/admin)
 - **Prometheus**: http://localhost:9090
+
+### PromQL Query References
+PromQL snippets used by the Latency Improvement dashboard are stored at `orchestration/grafana/queries/latency_improvement_promql.txt`.
 
 ## 🔬 Research Features
 
@@ -182,6 +187,7 @@ python integrated_system.py
 2. Start monitoring: `docker compose up -d`
 3. Start orchestration: `python integrated_system.py`
 4. Access dashboards: http://localhost:3000
+   - Import JSON from `orchestration/grafana/dashboards/latency_improvement_dashboard.json`
 
 ## 🔧 Troubleshooting
 
