@@ -57,3 +57,9 @@ Grafana Dashboards	http://localhost:3000	admin/admin
 Prometheus Metrics	http://localhost:9090	N/A
 SDN Controller	http://localhost:8080	N/A
 VNF Orchestrator	http://localhost:9091	N/A
+
+
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d @sfc_performance_dashboard.json \
+  http://admin:admin@localhost:3000/api/dashboards/db
