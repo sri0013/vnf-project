@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 class SFCRequestType(Enum):
     """SFC request types for email security"""
+    EMAIL_SIMPLE = "email_simple"
     INBOUND_USER_PROTECTION = "inbound_user_protection"
     OUTBOUND_DATA_PROTECTION_COMPLIANCE = "outbound_data_protection_compliance"
     AUTH_AND_ANTI_SPOOF_ENFORCEMENT = "auth_and_anti_spoof_enforcement"
@@ -104,32 +105,15 @@ class SFCOrchestrator:
             return {}
     
     def determine_sfc_type(self, request_metadata: Dict[str, Any]) -> SFCRequestType:
-        """Determine SFC type based on request metadata"""
-        # Analyze request metadata to classify SFC type
-        email_type = request_metadata.get('email_type', 'unknown')
-        direction = request_metadata.get('direction', 'inbound')
-        has_attachments = request_metadata.get('has_attachments', False)
-        is_compliance_required = request_metadata.get('compliance_required', False)
-        is_saas_access = request_metadata.get('saas_access', False)
-        
-        # Classification logic
-        if is_saas_access:
-            return SFCRequestType.BRANCH_CLOUD_SAAS_ACCESS
-        elif has_attachments:
-            return SFCRequestType.ATTACHMENT_RISK_REDUCTION
-        elif is_compliance_required:
-            return SFCRequestType.OUTBOUND_DATA_PROTECTION_COMPLIANCE
-        elif direction == 'inbound':
-            return SFCRequestType.INBOUND_USER_PROTECTION
-        else:
-            return SFCRequestType.AUTH_AND_ANTI_SPOOF_ENFORCEMENT
+        """Determine SFC type based on request metadata (forced to single simplified chain)."""
+        return SFCRequestType.EMAIL_SIMPLE
     
     def build_sfc_request(self, request_metadata: Dict[str, Any]) -> SFCRequest:
         """Build SFC request with appropriate chain"""
         request_id = f"sfc_{int(time.time() * 1000)}_{random.randint(1000, 9999)}"
         sfc_type = self.determine_sfc_type(request_metadata)
         
-        # Get chain from configuration
+        # Get chain from configuration (single simplified chain)
         sfc_config = self.config.get('sfc_request_types', {}).get(sfc_type.value, {})
         chain = sfc_config.get('chain', [])
         direction = SFCDirection(sfc_config.get('direction', 'bidirectional'))
@@ -161,7 +145,12 @@ class SFCOrchestrator:
             allocated_vnfs = {}
             flow_rules = []
             
+            # Only allocate real VNFs defined in config.vnf_types; skip non-VNF steps (e.g., smtp_server, receiver, decryption)
+            valid_vnfs = set(self.config.get('vnf_types', []))
             for vnf_type in request.chain:
+                if vnf_type not in valid_vnfs:
+                    logger.info(f"Skipping non-VNF step in chain: {vnf_type}")
+                    continue
                 # Check if VNF instance is available
                 instance_id = await self._allocate_vnf_instance(vnf_type, drl_action)
                 if not instance_id:
@@ -321,6 +310,7 @@ class SFCOrchestrator:
         """Get latency constraints for SFC"""
         # Different SFC types have different latency requirements
         latency_constraints = {
+            SFCRequestType.EMAIL_SIMPLE: 150.0,  # ms
             SFCRequestType.INBOUND_USER_PROTECTION: 100.0,  # ms
             SFCRequestType.OUTBOUND_DATA_PROTECTION_COMPLIANCE: 200.0,
             SFCRequestType.AUTH_AND_ANTI_SPOOF_ENFORCEMENT: 50.0,

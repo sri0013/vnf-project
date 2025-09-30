@@ -22,9 +22,9 @@ python VNF_PERFORMANCE_TESTS.py testall  # All tests
 
 ## 🔧 **What This System Does (Simple)**
 
-This project chains **4 core security functions** for email traffic on one machine. It sends each message through:
+This project uses a single simplified email chain:
 
-- **Firewall** → **Spam Filter** → **Content Filter** → **TLS/Encryption Gateway**
+- **Firewall** → **Encryption** → **SMTP Server** → **Spam Filter** → **Decryption** → **Receiver**
 
 The SDN controller steers packets between VNFs; DRL + ARIMA decide when to reuse or scale VNFs to keep latency low.
 
@@ -56,7 +56,7 @@ vnf-project/
 
 ## 🎯 **Key Features**
 
-- ✅ **4 Core VNFs**: Firewall, Spam Filter, Content Filter, TLS/Encryption Gateway
+- ✅ **Core VNFs Used**: Firewall, Encryption, Spam Filter
 - ✅ **3 Critical Test Cases**: End-to-end latency, tail latency percentiles, throughput at SLA
 - ✅ **One Command Each**: Build images, start orchestration, run tests
 - ✅ **DRL + ARIMA Orchestration**: Intelligent scaling decisions

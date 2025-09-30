@@ -1,109 +1,24 @@
 # VNF Orchestration Configuration
 vnf_types:
   - firewall
-  - spamfilter
-  - contentfilter
   - encryption
-  
-  # Inbound User Protection VNFs
-  - smtp_firewall
-  - anti_spam_phishing
-  - anti_virus_sandbox
-  - url_rewrite_clicktime
-  - delivery_agent
-  
-  # Outbound Data Protection VNFs
-  - policy_classifier
-  - dlp
-  - encryption_signing
-  - disclaimer_brand
-  - archiver_journal
-  - smart_host
-  
-  # Authentication & Anti-Spoof VNFs
-  - spf_dkim_dmarc_validator
-  - anti_spoof_bec
-  - policy_engine
-  - delivery_quarantine
-  
-  # Attachment Risk Reduction VNFs
-  - reputation_graylist
-  - multi_engine_av
-  - sandbox_detonation
-  - file_type_control
-  - content_disarm_reconstruct
-  
-  # Branch Cloud SaaS Access VNFs
-  - dns_url_filter
-  - attachment_sandbox_edge
-  - split_tunnel_steering
-  - sdwan_forwarder
-  - tls_enforcement_saas
+  - spamfilter
 
 # Service Function Chain Definitions
 sfc_request_types:
-  # Sender → Server (Inbound)
-  inbound_user_protection:
+  email_simple:
     chain:
       - firewall
+      - encryption
+      - smtp_server
       - spamfilter
-      - contentfilter
-      - encryption
-    description: "Inbound text-only protection chain"
-    direction: "inbound"
-    
-  outbound_data_protection_compliance:
-    chain:
-      - firewall
-      - contentfilter
-      - encryption
-    description: "Outbound text-only DLP + encryption"
-    direction: "outbound"
-    
-  auth_and_anti_spoof_enforcement:
-    chain:
-      - firewall
-      - spamfilter
-      - encryption
-    description: "Auth checks folded into spamfilter; TLS enforced"
-    direction: "bidirectional"
-    
-  attachment_risk_reduction:
-    chain:
-      - firewall
-      - spamfilter
-      - contentfilter
-    description: "No attachment handling in text-only scope"
-    direction: "bidirectional"
-    
-  branch_cloud_saas_access:
-    chain:
-      - firewall
-      - encryption
-    description: "Simplified for single-host Mininet"
+      - decryption
+      - receiver
+    description: "Single simplified flow: FW -> encryption -> SMTP -> spam -> decryption -> receiver"
     direction: "bidirectional"
 
 # Server → Receiver (Complementary chains)
-sfc_complementary_chains:
-  inbound_user_protection_response:
-    chain:
-      - encryption_tls
-      - contentfilter
-      - spamfilter
-      - firewall
-    description: "Simplified response chain"
-    direction: "outbound"
-    
-  outbound_data_protection_response:
-    chain:
-      - smart_host
-      - archiver_journal
-      - disclaimer_brand
-      - encryption_signing
-      - dlp
-      - policy_classifier
-    description: "Response chain for outbound data protection"
-    direction: "inbound"
+# Removed: using a single simplified chain; reverse will be auto-generated if needed
 
 # Orchestration Flow Configuration
 orchestration_flow:

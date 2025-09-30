@@ -35,9 +35,8 @@ python integrated_system.py
 - **Applications**: Load prediction, proactive scaling, capacity planning
 
 #### SFC Orchestrator (`sfc_orchestrator.py`)
-- **Bidirectional Flow**: Sender→Server and Server→Receiver chains
-- **SFC Types**: 5 comprehensive email security chains
-- **Intelligent Allocation**: DRL+ARIMA integration for optimal placement
+- **Single Chain**: FW → encryption → SMTP server → spam filter → decryption → receiver
+- **Allocation**: DRL+ARIMA integration for optimal placement of real VNFs only
 
 #### Monitoring (`grafana_dashboards.py`)
 - **Dashboards**: 6 comprehensive Grafana dashboards
@@ -80,13 +79,9 @@ performance_targets:
   arima_forecast_accuracy: 92
 ```
 
-### SFC Definitions
-The system supports 5 SFC types:
-1. **Inbound User Protection**: SMTP Firewall → Anti-Spam → Anti-Virus → URL Protection → Content Filter → Delivery
-2. **Outbound Data Protection**: Policy Classifier → DLP → Encryption → Disclaimer → Archiver → Smart-Host
-3. **Authentication & Anti-Spoof**: SPF/DKIM/DMARC → Anti-Spoof → Policy Engine → Quarantine
-4. **Attachment Risk Reduction**: Reputation → Multi-Engine AV → Sandbox → File Control → Content Disarm
-5. **Branch Cloud SaaS Access**: DNS Filter → Edge Sandbox → Split-Tunnel → SD-WAN → TLS Enforcement
+### SFC Definition
+Single simplified chain used by the system:
+FW → encryption → SMTP server → spam filter → decryption → receiver
 
 ## 🧪 Testing
 
@@ -146,9 +141,9 @@ PromQL snippets used by the Latency Improvement dashboard are stored at `orchest
 - **Model Validation**: Ljung-Box test for residual analysis
 
 ### SFC Orchestration
-- **Bidirectional Flow**: Complete email security chain management
-- **Intelligent Routing**: DRL-based optimal path selection
-- **Auto-scaling**: Proactive scaling based on ARIMA forecasts
+- **Single Chain**: Simplified email security flow
+- **Intelligent Routing**: DRL-based placement
+- **Auto-scaling**: Proactive scaling via ARIMA forecasts
 - **SLA Monitoring**: Real-time performance tracking
 
 ## 📁 File Structure
