@@ -123,7 +123,9 @@ Once running:
 
 ```bash
 # Install dependencies
-pip install -r requirements.txt
+pip install --upgrade pip setuptools wheel
+PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_DEFAULT_TIMEOUT=100 \
+  pip install --prefer-binary --only-binary=:all: -r requirements.txt
 
 # Build all VNF images
 python VNF_PERFORMANCE_TESTS.py build
@@ -131,6 +133,17 @@ python VNF_PERFORMANCE_TESTS.py build
 # Start orchestration system
 python VNF_PERFORMANCE_TESTS.py orchestrate
 ```
+
+### 💾 Disk space tips (avoid [Errno 28] No space left on device)
+- **Clean pip cache**: `pip cache purge`
+- **Prune Docker**: `docker system prune -af --volumes`
+- **Remove dangling images**: `docker image prune -af`
+- **Windows temp cleanup**: Run `Disk Cleanup` and clear `%TEMP%`
+
+### 🧱 Dependency resilience
+- Prefer Python 3.10 for Docker images (`python:3.10-slim` used in orchestrator containers)
+- Avoid strict `==` pins for heavy libs; use compatible ranges
+- Favor prebuilt wheels with `--prefer-binary --only-binary=:all:` to skip source builds
 
 ## 📚 **Documentation**
 
