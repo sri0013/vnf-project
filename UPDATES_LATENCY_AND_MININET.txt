@@ -44,3 +44,34 @@ Recommended commands
 Notes
 - If starting VNFs, ensure images: my-firewall-vnf, my-spamfilter-vnf, my-encryption-vnf, my-contentfilter-vnf
 - When compose stack (Prometheus/Grafana/Controller) is running, prefer --light/--no-vnfs on 6 GB RAM
+
+3) Environment, Dependencies, and Grafana Provisioning Updates
+Date: 2025-10-01
+
+What changed (summary)
+- Upgraded orchestrator Docker images to Python 3.10-slim and added build tools.
+- Switched pip installs to prefer prebuilt wheels and disabled cache to reduce disk usage.
+- Relaxed version pins in orchestration/requirements.txt; aligned DL libs in root requirements.
+- Added Grafana provisioning (datasource + dashboards) and mounted dashboards dir in compose.
+- Extended README with disk space tips and resilient pip install commands.
+
+Files updated
+- orchestration/Dockerfile.orchestrator: base image -> python:3.10-slim; pip flags; build-essential.
+- orchestration/Dockerfile.sdn: base image -> python:3.10-slim; pip flags; build-essential.
+- orchestration/requirements.txt: relaxed pins (numpy>=1.24,<2; torch>=2.1,<2.4; etc.).
+- requirements.txt (root): aligned torch/torchvision/torchaudio ranges; aiohttp/matplotlib ranges.
+- orchestration/docker-compose.yml: mounted Grafana dashboards and provisioning directories.
+- orchestration/grafana/provisioning/datasources/datasource.yml: default Prometheus datasource (http://prometheus:9090).
+- orchestration/grafana/provisioning/dashboards/dashboards.yml: provider to auto-load dashboards from /var/lib/grafana/dashboards.
+- README.md: added pip install guidance and disk cleanup steps (pip cache purge, docker prune, etc.).
+
+Why
+- Fix DRL crash ("Numpy is not available") by ensuring compatible wheels and stable env.
+- Avoid SciPy/PyTorch build conflicts by relaxing pins and preferring wheels.
+- Reduce "No space left on device" via no-cache installs and cleanup guidance.
+- Ensure Grafana auto-loads dashboards and uses the correct Prometheus datasource.
+
+How to apply
+- Rebuild stack: docker compose -f orchestration/docker-compose.yml build --no-cache
+- Start stack:  docker compose -f orchestration/docker-compose.yml up -d
+- Orchestrator (host): python -m orchestration.integrated_system
