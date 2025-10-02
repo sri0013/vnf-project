@@ -513,11 +513,11 @@ class VNFOrchestrator:
         orchestration_thread.start()
         
         # Start the Flask server for Prometheus scraping/health checks on 0.0.0.0:9091
-        server_thread = threading.Thread(
-            target=lambda: self.app.run(host='0.0.0.0', port=9091, debug=False, use_reloader=False),
-            daemon=True
-        )
-        server_thread.start()
+        # server_thread = threading.Thread(
+        #     target=lambda: self.app.run(host='0.0.0.0', port=9091, debug=False, use_reloader=False),
+        #     daemon=True
+        # )
+        # server_thread.start()
         
         # Keep main thread alive
         try:
