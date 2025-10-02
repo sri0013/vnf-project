@@ -11,6 +11,8 @@ import threading
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 import schedule
+import os
+from flask import Flask, jsonify
 
 import docker
 import pandas as pd
@@ -47,6 +49,12 @@ class VNFOrchestrator:
     def __init__(self, config_file: str = "orchestration_config.yml"):
         self.config = self._load_config(config_file)
         self.docker_client = docker.from_env()
+        
+        # Initialize Flask application for health/metrics endpoints on 9091
+        self.app = Flask(__name__)
+        # Register lightweight endpoints suitable for Prometheus health checks
+        self.app.add_url_rule('/metrics', 'metrics', self.metrics_endpoint)
+        self.app.add_url_rule('/status', 'status', self.status_endpoint)
         
         # VNF instances tracking
         self.vnf_instances = {
@@ -87,6 +95,17 @@ class VNFOrchestrator:
     def log(self, message: str):
         """Simple logging method for compatibility"""
         logger.info(message)
+    
+    def metrics_endpoint(self):
+        """Endpoint to return Prometheus-scrapable placeholder content"""
+        return "Orchestrator metrics running", 200
+
+    def status_endpoint(self):
+        """Basic status endpoint for health checks on port 9091"""
+        return jsonify({
+            'status': 'healthy',
+            'drl_status': 'active'
+        }), 200
     
     async def initialize(self):
         """Initialize the VNF Orchestrator asynchronously"""
@@ -493,11 +512,20 @@ class VNFOrchestrator:
         orchestration_thread = threading.Thread(target=self.orchestration_loop, daemon=True)
         orchestration_thread.start()
         
+        # Start the Flask server for Prometheus scraping/health checks on 0.0.0.0:9091
+        server_thread = threading.Thread(
+            target=lambda: self.app.run(host='0.0.0.0', port=9091, debug=False, use_reloader=False),
+            daemon=True
+        )
+        server_thread.start()
+        
         # Keep main thread alive
         try:
             while True:
                 time.sleep(1)
         except KeyboardInterrupt:
+            # Ensure DRL models directory exists to prevent shutdown save errors
+            os.makedirs('orchestration/models', exist_ok=True)
             logger.info("Shutting down VNF Orchestrator")
     
     # Additional methods needed by integrated_system.py

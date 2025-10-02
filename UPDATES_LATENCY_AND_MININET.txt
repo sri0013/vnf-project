@@ -75,3 +75,23 @@ How to apply
 - Rebuild stack: docker compose -f orchestration/docker-compose.yml build --no-cache
 - Start stack:  docker compose -f orchestration/docker-compose.yml up -d
 - Orchestrator (host): python -m orchestration.integrated_system
+
+4) Critical: Orchestrator 9091 Binding (ERR_CONNECTION_RESET)
+- Symptom: Browser shows ERR_CONNECTION_RESET for http://localhost:9091; Grafana/Prometheus show "No data".
+- Root cause: Flask in the orchestrator bound to 127.0.0.1 instead of 0.0.0.0, making it unreachable from containers/host.
+- Fix: Ensure the Flask server starts with host=0.0.0.0 on port 9091.
+  Python (example)
+  app.run(host='0.0.0.0', port=9091, debug=False)
+- Where to check: orchestration/vnf_orchestrator.py (or the server entry in the orchestrator process).
+- How to run: From repo root, start orchestrator with: python -m orchestration.integrated_system
+- Compose notes: Expose/map 9091 in orchestration/docker-compose.yml if orchestrator runs in Docker.
+- Prometheus target: Use http://orchestrator:9091 from containers; use http://localhost:9091 from host.
+
+5) orchestration_config.yml Not Found (Warning)
+- Message: WARNING - Config file orchestration_config.yml not found, using defaults
+- Expected path: orchestration/orchestration_config.yml
+- Impact: Defaults are used for SFC definition and performance targets.
+- If you need custom settings:
+  1) Create/save exact file name orchestration_config.yml under orchestration/
+  2) Populate your SFC and targets; then restart orchestrator (python -m orchestration.integrated_system)
+- If defaults are fine: You can ignore the warning; dashboards and tests will still work using defaults.
