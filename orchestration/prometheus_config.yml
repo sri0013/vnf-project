@@ -36,8 +36,3 @@ scrape_configs:
     metrics_path: '/metrics'
     scrape_interval: 30s
 
-  - job_name: 'orchestrator'
-    static_configs:
-      - targets: ['vnf-orchestrator:9090']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
