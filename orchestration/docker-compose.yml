@@ -7,12 +7,10 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus_config.yml:/etc/prometheus/prometheus.yml:ro
-      - ./vnf_rules.yml:/etc/prometheus/vnf_rules.yml:ro
+      - ./vnf_alerts.yml:/etc/prometheus/vnf_alerts.yml:ro
       - prometheus_data:/prometheus
-    # --- START CRITICAL NETWORK FIX ---
     extra_hosts:
-      - "host.docker.internal:host-gateway" 
-    # --- END CRITICAL NETWORK FIX ---
+      - "host.docker.internal:host-gateway"
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -48,7 +46,7 @@ services:
     container_name: vnf-orchestrator
     user: root
     ports:
-      - "9091:9090"  # Prometheus metrics port
+      - "9091:9091"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./orchestration_config.yml:/app/orchestration_config.yml
@@ -61,7 +59,7 @@ services:
       - sdn-controller
       - prometheus
 
-  # Grafana for visualization (optional)
+  # Grafana for visualization
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -80,7 +78,7 @@ services:
     depends_on:
       - prometheus
 
-  # VNF Instances (initial deployment - text-only chain)
+  # VNF Instances (initial deployment)
   vnf-firewall-1:
     image: my-firewall-vnf:latest
     container_name: vnf-firewall-1

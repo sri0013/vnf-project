@@ -16,8 +16,7 @@ RUN python -m pip install --upgrade pip setuptools wheel && \
     pip install --prefer-binary --only-binary=:all: -r requirements.txt
 
 # Copy orchestration files
-COPY vnf_orchestrator.py .
-COPY orchestration_config.yml .
+COPY vnf_orchestrator.py metrics_registry.py orchestration_config.yml /app/
 
 # Create non-root user
 RUN useradd -m -u 1000 orchestrator && \
@@ -26,11 +25,11 @@ RUN useradd -m -u 1000 orchestrator && \
 USER orchestrator
 
 # Expose Prometheus metrics port
-EXPOSE 9090
+EXPOSE 9091
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:9090/metrics')" || exit 1
+    CMD python -c "import requests; requests.get('http://localhost:9091/metrics')" || exit 1
 
 # Start the orchestrator
 CMD ["python", "vnf_orchestrator.py"]
