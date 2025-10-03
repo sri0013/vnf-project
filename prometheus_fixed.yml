@@ -12,23 +12,23 @@ alerting:
         - alertmanager:9093
 
 scrape_configs:
-  # Prometheus self-monitoring (Used to check the health of the Prometheus server itself)
+  # Prometheus self-monitoring (Prometheus server health)
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
 
   # VNF Metrics Exporter (main metrics source on host)
-  # This targets the VNF Orchestrator, assuming it runs on the Docker bridge IP.
+  # Targets the host system using the stable alias
   - job_name: 'vnf-metrics'
     scrape_interval: 5s
     metrics_path: '/metrics'
     static_configs:
-      - targets: ['172.17.0.1:9091']
+      - targets: ['host.docker.internal:9091']
 
-  # Optional: Host service health on 8080 (For SDN Controller or other host services)
+  # Optional: Host service health on 8080
   - job_name: 'vnf-containers'
     scrape_interval: 10s
     scrape_timeout: 5s
     metrics_path: '/health'
     static_configs:
-      - targets: ['172.17.0.1:8080']
+      - targets: ['host.docker.internal:8080']

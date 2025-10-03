@@ -9,6 +9,10 @@ services:
       - ./prometheus_config.yml:/etc/prometheus/prometheus.yml:ro
       - ./vnf_rules.yml:/etc/prometheus/vnf_rules.yml:ro
       - prometheus_data:/prometheus
+    # --- START CRITICAL NETWORK FIX ---
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
+    # --- END CRITICAL NETWORK FIX ---
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -136,8 +140,6 @@ services:
     restart: unless-stopped
     depends_on:
       - sdn-controller
-
-  
 
 volumes:
   prometheus_data:
