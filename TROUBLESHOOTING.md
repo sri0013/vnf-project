@@ -248,7 +248,7 @@ python VNF_PERFORMANCE_TESTS.py test3
 
 ```bash
 # Access live dashboards
-# Grafana: http://localhost:3000 (admin/admin)
+# Grafana: http://localhost:3001 (admin/admin)
 # Prometheus: http://localhost:9090
 # SDN Controller: http://localhost:8080
 # VNF Orchestrator: http://localhost:9091
@@ -298,7 +298,7 @@ pip install -r requirements.txt
 - [ ] Are you using Python 3.8+?
 - [ ] Have you built VNF images first (`python VNF_PERFORMANCE_TESTS.py build`)?
 - [ ] Have you started orchestration (`python VNF_PERFORMANCE_TESTS.py orchestrate`)?
-- [ ] Are the required ports (3000, 8080, 9090, 9091) available?
+- [ ] Are the required ports (3001, 8080, 9090, 9091) available?
 - [ ] Are you running tests from the project root directory?
 
 ## 🆘 **Getting Help**

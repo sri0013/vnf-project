@@ -15,7 +15,7 @@ python VNF_PERFORMANCE_TESTS.py orchestrate
 ```
 
 #### **2. Access Live Dashboards**
-- **🎛️ Grafana Dashboards**: http://localhost:3000 (admin/admin)
+- **🎛️ Grafana Dashboards**: http://localhost:3001 (admin/admin)
 - **📊 Prometheus Metrics**: http://localhost:9090
 - **🔧 SDN Controller**: http://localhost:8080
 - **📈 VNF Orchestrator**: http://localhost:9091
@@ -25,7 +25,7 @@ python VNF_PERFORMANCE_TESTS.py orchestrate
 ## 📊 **Live Monitoring Dashboards**
 
 ### **1. VNF Overview Dashboard**
-**URL**: http://localhost:3000/d/vnf-overview
+**URL**: http://localhost:3001/d/vnf-overview
 
 **Live Metrics**:
 - ✅ **VNF Instance Count** - Real-time VNF instances by type
@@ -36,7 +36,7 @@ python VNF_PERFORMANCE_TESTS.py orchestrate
 - ✅ **Scaling Actions** - Real-time scale in/out events
 
 ### **2. DRL Agent Dashboard**
-**URL**: http://localhost:3000/d/drl-agent
+**URL**: http://localhost:3001/d/drl-agent
 
 **Live DRL Metrics**:
 - 🧠 **Learning Progress** - Episode count, loss curves, epsilon decay
@@ -47,7 +47,7 @@ python VNF_PERFORMANCE_TESTS.py orchestrate
 - 🎲 **Exploration Rate** - Epsilon-greedy exploration
 
 ### **3. ARIMA Forecasting Dashboard**
-**URL**: http://localhost:3000/d/arima-forecasting
+**URL**: http://localhost:3001/d/arima-forecasting
 
 **Live ARIMA Metrics**:
 - 📊 **Load Forecasts** - Real-time load predictions
@@ -58,7 +58,7 @@ python VNF_PERFORMANCE_TESTS.py orchestrate
 - ⚙️ **Model Parameters** - Live ARIMA (p,d,q) values
 
 ### **4. SFC Performance Dashboard**
-**URL**: http://localhost:3000/d/sfc-performance
+**URL**: http://localhost:3001/d/sfc-performance
 
 **Live SFC Metrics**:
 - 🔗 **SFC Chain Status** - Active service chains
@@ -69,7 +69,7 @@ python VNF_PERFORMANCE_TESTS.py orchestrate
 - 📈 **Resource Utilization** - Live resource usage
 
 ### **5. Alerting Dashboard**
-**URL**: http://localhost:3000/d/alerting
+**URL**: http://localhost:3001/d/alerting
 
 **Live Alerts**:
 - 🚨 **Active Alerts** - Real-time alert status
@@ -275,7 +275,7 @@ VNF Instances → Prometheus Scraping → Metrics Storage → Grafana Queries �
 ## 🎯 **Quick Reference**
 
 ### **Essential URLs**
-- **Grafana**: http://localhost:3000 (admin/admin)
+- **Grafana**: http://localhost:3001 (admin/admin)
 - **Prometheus**: http://localhost:9090
 - **SDN Controller**: http://localhost:8080
 - **VNF Orchestrator**: http://localhost:9091

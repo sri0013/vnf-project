@@ -1,0 +1,169 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ARIMA Forecasting Dashboard",
+    "tags": [
+      "arima",
+      "forecasting",
+      "prediction"
+    ],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Historical Data vs Forecast",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "arima_historical_data",
+            "legendFormat": "Historical Data"
+          },
+          {
+            "expr": "arima_forecast",
+            "legendFormat": "Forecast"
+          },
+          {
+            "expr": "arima_forecast_upper_ci",
+            "legendFormat": "Upper CI"
+          },
+          {
+            "expr": "arima_forecast_lower_ci",
+            "legendFormat": "Lower CI"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "lineWidth": 2,
+              "fillOpacity": 10
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Forecast Accuracy Metrics",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "arima_mae",
+            "legendFormat": "MAE"
+          },
+          {
+            "expr": "arima_rmse",
+            "legendFormat": "RMSE"
+          },
+          {
+            "expr": "arima_mape",
+            "legendFormat": "MAPE"
+          },
+          {
+            "expr": "arima_r_squared",
+            "legendFormat": "R\u00b2"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayMode": "list"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 3,
+        "title": "Model Quality Metrics",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "arima_aic",
+            "legendFormat": "AIC"
+          },
+          {
+            "expr": "arima_bic",
+            "legendFormat": "BIC"
+          },
+          {
+            "expr": "arima_ljung_box_pvalue",
+            "legendFormat": "Ljung-Box p-value"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "displayMode": "list"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": 4,
+        "title": "Scaling Recommendations",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "arima_scaling_recommendation",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto",
+              "displayMode": "auto"
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 16
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    },
+    "refresh": "10s"
+  }
+}

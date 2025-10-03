@@ -114,7 +114,7 @@ python VNF_PERFORMANCE_TESTS.py testall
 ## 📊 **Live Monitoring Endpoints**
 
 Once running:
-- **🎛️ Grafana Dashboards**: http://localhost:3000 (admin/admin)
+- **🎛️ Grafana Dashboards**: http://localhost:3001 (admin/admin)
 - **📊 Prometheus Metrics**: http://localhost:9090
 - **🔧 SDN Controller**: http://localhost:8080
 - **📈 VNF Orchestrator**: http://localhost:9091

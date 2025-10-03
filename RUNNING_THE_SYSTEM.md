@@ -244,7 +244,7 @@ python VNF_PERFORMANCE_TESTS.py test3    # Throughput at latency SLA
 
 ```bash
 # Access live monitoring
-# Grafana: http://localhost:3000 (admin/admin)
+# Grafana: http://localhost:3001 (admin/admin)
 # Prometheus: http://localhost:9090
 # SDN Controller: http://localhost:8080
 ```
@@ -253,7 +253,7 @@ python VNF_PERFORMANCE_TESTS.py test3    # Throughput at latency SLA
 
 Once running successfully:
 
-- **🎛️ Grafana Dashboards**: http://localhost:3000 (admin/admin)
+- **🎛️ Grafana Dashboards**: http://localhost:3001 (admin/admin)
 - **📊 Prometheus Metrics**: http://localhost:9090
 - **🔧 SDN Controller**: http://localhost:8080
 - **📈 VNF Orchestrator**: http://localhost:9091
@@ -286,7 +286,7 @@ python VNF_PERFORMANCE_TESTS.py testall
 
 ```bash
 # Access live monitoring
-# Grafana: http://localhost:3000 (admin/admin)
+# Grafana: http://localhost:3001 (admin/admin)
 # Prometheus: http://localhost:9090
 # SDN Controller: http://localhost:8080
 ```
