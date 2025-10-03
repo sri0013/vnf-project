@@ -215,6 +215,6 @@ if __name__ == '__main__':
     metrics_thread.start()
 
     logger.info("Starting VNF Metrics Exporter on port 9091")
-    app.run(host='0.0.0.0', port=9091, debug=False)
+    app.run(host='0.0.0.0', port=9091, threaded=True, debug=False)
 
 
