@@ -8,29 +8,27 @@ rule_files:
 alerting:
   alertmanagers:
     - static_configs:
-        - targets:
-          - alertmanager:9093
+      - targets:
+        - alertmanager:9093
 
 scrape_configs:
-  # Prometheus self-monitoring
+  # Prometheus self-monitoring (Used to check the health of the Prometheus server itself)
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
 
-  # VNF Metrics Exporter (main metrics source)
+  # VNF Metrics Exporter (main metrics source on host)
+  # This targets the VNF Orchestrator, assuming it runs on the Docker bridge IP.
   - job_name: 'vnf-metrics'
     scrape_interval: 5s
-    static_configs:
-      - targets: ['localhost:9091']
     metrics_path: '/metrics'
+    static_configs:
+      - targets: ['172.17.0.1:9091']
 
-  # Optional: If their VNF containers are running and exposing metrics
+  # Optional: Host service health on 8080 (For SDN Controller or other host services)
   - job_name: 'vnf-containers'
     scrape_interval: 10s
-    static_configs:
-      - targets:
-        - 'localhost:8080'  # SDN Controller from their system
     scrape_timeout: 5s
-    metrics_path: '/health'  # Use health endpoint instead of /metrics
-
-
+    metrics_path: '/health'
+    static_configs:
+      - targets: ['172.17.0.1:8080']
