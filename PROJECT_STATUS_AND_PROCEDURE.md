@@ -31,7 +31,7 @@
 
 #### 4. **Infrastructure & Configuration**
 - **Docker support** - All VNFs containerized
-- **Prometheus monitoring** - Metrics collection
+- **Prometheus monitoring** - Metrics collection (✅ **RECENTLY FIXED**)
 - **Grafana dashboards** - Visualization
 - **YAML configurations** - System settings
 - **Requirements management** - Dependencies
@@ -212,6 +212,24 @@ python VNF_PERFORMANCE_TESTS.py testall
 - All listed in requirements.txt
 
 ## 🚨 **TROUBLESHOOTING**
+
+### **Recent Configuration Fix - ✅ RESOLVED**
+
+#### **✅ Prometheus Configuration Issues (FIXED)**
+**Issue**: Prometheus scraping jobs were failing due to unresponsive VNF endpoints
+**Solution**: Removed failing VNF job configurations from `orchestration/prometheus_config.yml`
+
+**What was removed**:
+- `job_name: 'vnf-firewall'`
+- `job_name: 'vnf-antivirus'` 
+- `job_name: 'vnf-spamfilter'`
+- `job_name: 'vnf-encryption'`
+- `job_name: 'vnf-contentfilter'`
+
+**What was kept**:
+- Prometheus self-monitoring (`prometheus` job)
+- Essential orchestration metrics collection
+- Core monitoring functionality
 
 ### **Common Issues**
 

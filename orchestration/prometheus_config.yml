@@ -6,33 +6,8 @@ rule_files:
   - "vnf_rules.yml"
 
 scrape_configs:
-  - job_name: 'vnf-firewall'
+  # Prometheus self-scraping
+  - job_name: 'prometheus'
     static_configs:
-      - targets: ['vnf-firewall-1:8080']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  - job_name: 'vnf-antivirus'
-    static_configs:
-      - targets: ['vnf-antivirus-1:8080']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  - job_name: 'vnf-spamfilter'
-    static_configs:
-      - targets: ['vnf-spamfilter-1:8080']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  - job_name: 'vnf-encryption'
-    static_configs:
-      - targets: ['vnf-encryption-1:8080']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
-
-  - job_name: 'vnf-contentfilter'
-    static_configs:
-      - targets: ['vnf-contentfilter-1:8080']
-    metrics_path: '/metrics'
-    scrape_interval: 30s
+      - targets: ['localhost:9090']
 

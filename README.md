@@ -171,6 +171,14 @@ When everything works, you'll see:
 3. **Run tests**: `python VNF_PERFORMANCE_TESTS.py testall`
 4. **Check PROJECT_STATUS_AND_PROCEDURE.md** for detailed instructions
 
+## 🔧 **Recent Fixes**
+
+### **Prometheus Configuration Fix**
+- ✅ **Removed failing VNF job configurations** from `orchestration/prometheus_config.yml`
+- ✅ **Kept only essential Prometheus self-monitoring** 
+- ✅ **Eliminated scraping targets** for unresponsive VNF endpoints
+- ✅ **System now focuses on orchestrator metrics** and core monitoring
+
 ## 🚀 **Quick Commands Summary**
 
 ```bash

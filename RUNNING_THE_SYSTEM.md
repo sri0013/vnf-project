@@ -121,6 +121,21 @@ python VNF_PERFORMANCE_TESTS.py testall
 
 ## 🚨 **Common Errors and Solutions**
 
+### **✅ RESOLVED: Prometheus Configuration Errors**
+
+**Issue**: Prometheus scraping failures for VNF endpoints
+**Status**: ✅ **FIXED**
+
+**Solution Applied**:
+- Removed failing VNF job configurations from `orchestration/prometheus_config.yml`
+- Eliminated scraping targets for unresponsive VNF endpoints:
+  - `vnf-firewall-1:8080`
+  - `vnf-antivirus-1:8080`
+  - `vnf-spamfilter-1:8080`
+  - `vnf-encryption-1:8080`
+  - `vnf-contentfilter-1:8080`
+- Kept only Prometheus self-monitoring for stable operation
+
 ### **Error 1: Docker Not Running**
 
 **Cause**: Docker Desktop is not started

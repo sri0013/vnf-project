@@ -1,5 +1,34 @@
 # VNF Performance Testing System - Troubleshooting Guide
 
+## ✅ **RECENTLY RESOLVED ISSUES**
+
+### **Prometheus Configuration Fix (RESOLVED)**
+
+**Issue**: Prometheus scraping jobs failing with connection errors to VNF endpoints
+**Status**: ✅ **FIXED** 
+
+**Root Cause**: VNF endpoints (`vnf-firewall-1:8080`, etc.) were not responding, causing Prometheus scrape failures
+
+**Solution Applied**:
+- ✅ **Removed all failing VNF job configurations** from `orchestration/prometheus_config.yml`
+- ✅ **Eliminated problematic scrape targets** for unresponsive VNF endpoints
+- ✅ **Kept essential Prometheus self-monitoring** functionality
+- ✅ **Updated documentation** to reflect configuration changes
+
+**Affected Jobs Removed**:
+- `job_name: 'vnf-firewall'`
+- `job_name: 'vnf-antivirus'`
+- `job_name: 'vnf-spamfilter'`
+- `job_name: 'vnf-encryption'`
+- `job_name: 'vnf-contentfilter'`
+
+**Current Configuration**:
+- ✅ Prometheus self-scraping: `localhost:9090`
+- ✅ Essential orchestration metrics collection
+- ✅ Stable monitoring foundation
+
+---
+
 ## 🚨 **Common Issues and Solutions**
 
 ### **Issue 1: Docker Not Running**
